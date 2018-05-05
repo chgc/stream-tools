@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HubService } from '../hub.service';
+import { CommandModel } from '../command.interface';
 
 @Component({
   selector: 'app-guest',
@@ -12,7 +13,14 @@ export class GuestComponent implements OnInit {
   ngOnInit() {}
 
   sendMessage(input) {
-    this.hubService.sendCommand(input.value);
+    this.hubService.sendCommand(this.buildCommand(input.value));
     input.value = '';
+  }
+
+  buildCommand(value) {
+    return <CommandModel>{
+      command: 'message',
+      message: value
+    };
   }
 }

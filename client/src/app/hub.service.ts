@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HubConnection } from '@aspnet/signalr';
 import { environment } from '../environments/environment';
 import { Subject } from 'rxjs';
+import { CommandModel } from './command.interface';
 @Injectable({
   providedIn: 'root'
 })
 export class HubService {
   private hubConnection: HubConnection;
-  message$ = new Subject();
+  message$ = new Subject<CommandModel>();
   constructor() {
     this.hubConnection = new HubConnection(environment.hubUrl);
 
@@ -17,11 +18,11 @@ export class HubService {
       .catch(err => console.log('Error while establishing connection :('));
 
     this.hubConnection.on('receiveCommand', (receivedMessage: string) => {
-      this.message$.next(receivedMessage);
+      this.message$.next(JSON.parse(receivedMessage));
     });
   }
 
-  sendCommand(message: string) {
-    this.hubConnection.invoke('sendCommand', message).catch(err => console.error(err));
+  sendCommand(command: CommandModel) {
+    this.hubConnection.invoke('sendCommand', command).catch(err => console.error(err));
   }
 }
