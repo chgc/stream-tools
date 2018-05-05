@@ -7,4 +7,9 @@ public class ActionHub : Hub
     {
         await Clients.All.SendAsync("ReceiveMessage", user, message);
     }
+
+    public async Task SendToAll(string name, string message)
+    {
+        await Clients.All.SendAsync("sendToAll", name, message);
+    }
 }

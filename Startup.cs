@@ -18,8 +18,10 @@ namespace stream_tools
             services.AddCors(options => options.AddPolicy("CorsPolicy",
              builder =>
              {
-                 builder.AllowAnyMethod().AllowAnyHeader()
-                        .WithOrigins("http://localhost:4200");
+                 builder.WithOrigins("http://localhost:4200")
+                        .AllowCredentials()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
              }));
 
             services.AddSignalR();
