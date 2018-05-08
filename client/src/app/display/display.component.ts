@@ -5,6 +5,7 @@ import { delay, mergeMap, tap } from 'rxjs/operators';
 import { HubService } from '../hub.service';
 import { environment } from '../../environments/environment';
 import { CommandModel } from '../command.interface';
+import { ToolsService } from '../tools.service';
 
 @Component({
   selector: 'app-display',
@@ -24,12 +25,12 @@ import { CommandModel } from '../command.interface';
   ]
 })
 export class DisplayComponent implements OnInit {
-  message$ = this.hubService.message$;
+  message$ = this.service.message$;
   messages: CommandModel[] = [];
   tasks$ = new Subject<Observable<any>>();
   remover$ = of('').pipe(delay(environment.delayTime), tap(() => this.messages.shift()));
 
-  constructor(private hubService: HubService) {}
+  constructor(private service: ToolsService) {}
 
   ngOnInit() {
     this.tasks$.pipe(mergeMap(task => task)).subscribe();
