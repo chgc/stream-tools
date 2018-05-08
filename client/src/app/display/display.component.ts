@@ -35,7 +35,7 @@ export class DisplayComponent implements OnInit {
   ngOnInit() {
     this.tasks$.pipe(mergeMap(task => task)).subscribe();
     this.message$.subscribe(value => {
-      this.messages.push(value);
+      this.messages.push({ ...value });
       this.tasks$.next(this.remover$);
     });
   }
