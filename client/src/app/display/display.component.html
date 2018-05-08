@@ -1,5 +1,5 @@
 <div [@listAnimation]="messages.length">
-  <div *ngFor="let message of messages">
+  <section *ngFor="let message of messages" [ngStyle]="message.style">
     {{ message.message }}
-  </div>
+  </section>
 </div>
