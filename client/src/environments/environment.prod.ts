@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  hubUrl: 'http://localhost:5000/actionHub',
+  hubUrl: 'https://amos-streaming.azurewebsites.net/actionHub',
   delayTime: 3000
 };

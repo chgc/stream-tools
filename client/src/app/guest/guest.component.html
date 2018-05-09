@@ -1,1 +1,26 @@
-<input type="text" (keyup.enter)="sendMessage(msg)" #msg>
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+      <!-- 描述文字 -->
+      <div class="page-header">
+        <h1>對直播主吐槽吧
+          <small>真是好吐槽啊</small>
+        </h1>
+      </div>
+
+      <!-- 表單區 -->
+      <form>
+        <div class="form-group form-group-lg">
+          <input type="text" placeholder="請輸入您想吐槽的字，按Enter送出" class="form-control" (keyup.enter)="sendMessage(msg.value); msg.value=''"
+            #msg>
+        </div>
+      </form>
+
+      <!-- 罐頭訊息 -->
+      <button class="btn btn-lg btn-danger" (click)="sendMessage('斗內時間')">斗內時間</button>
+      <button class="btn btn-lg btn-warning" (click)="sendMessage('哈哈哈')">哈哈哈</button>
+      <button class="btn btn-lg btn-success" (click)="sendMessage('咬我啊')">咬我啊</button>
+      <button class="btn btn-lg btn-primary" (click)="sendMessage('77777777')">77777777</button>
+    </div>
+  </div>
+</div>

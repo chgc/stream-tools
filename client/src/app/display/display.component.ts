@@ -12,16 +12,16 @@ import { ToolsService } from '../tools.service';
   templateUrl: './display.component.html',
   styleUrls: ['./display.component.css'],
   animations: [
-    trigger('listAnimation', [
-      transition('* => *', [
-        query(':enter', [style({ opacity: 0 }), stagger(100, [animate('0.5s', style({ opacity: 1 }))])], {
-          optional: true
-        }),
-        query(':leave', [stagger(100, [animate('0.5s', style({ opacity: 0 }))])], {
-          optional: true
-        })
-      ])
-    ])
+    // trigger('listAnimation', [
+    //   transition('* => *', [
+    //     query(':enter', [style({ opacity: 0 }), stagger(100, [animate('0.5s', style({ opacity: 1 }))])], {
+    //       optional: true
+    //     }),
+    //     query(':leave', [stagger(100, [animate('0.5s', style({ opacity: 0 }))])], {
+    //       optional: true
+    //     })
+    //   ])
+    // ])
   ]
 })
 export class DisplayComponent implements OnInit {

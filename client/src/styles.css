@@ -1,6 +1,56 @@
 /* You can add global styles to this file, and also import other style files */
+@font-face {
+  font-family: 'amos';
+  src: url('NotoSansCJKtc-Black.otf');
+}
 body {
+  font-family: 'amos', 'Noto Sans CJK TC Black', arial, '微軟正黑體';
+  font-weight: black;
   background-color: rgba(0, 0, 0, 0);
   margin: 0px auto;
   overflow: hidden;
+}
+.font-card {
+  position: absolute;
+  text-align: center;
+  font-size: 50px;
+  color: #ff0;
+  margin: 0;
+  -webkit-text-stroke: 3px #000;
+}
+/* .r1 {
+  transform: rotate(8deg);
+}
+.r2 {
+  transform: rotate(-8deg);
+}
+.r3 {
+  transform: rotate(25deg);
+}
+.r4 {
+  transform: rotate(-25deg);
+}
+.r5 {
+  transform: rotate(40deg);
+} */
+
+.fz1 {
+  font-size: 40px;
+  -webkit-text-stroke: 2px #000;
+}
+.fz2 {
+  font-size: 60px;
+  -webkit-text-stroke: 3px #000;
+}
+.fz3 {
+  font-size: 70px;
+  -webkit-text-stroke: 3px #000;
+}
+.fz4 {
+  font-size: 80px;
+  -webkit-text-stroke: 4px #000;
+}
+.fz5 {
+  font-size: 90px;
+  -webkit-text-stroke: 5px #000;
 }

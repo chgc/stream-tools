@@ -10,49 +10,49 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace stream_tools
 {
-  public class Startup
-  {
-    // This method gets called by the runtime. Use this method to add services to the container.
-    // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-    public void ConfigureServices(IServiceCollection services)
+    public class Startup
     {
-      services.AddCors(options => options.AddPolicy("CorsPolicy",
-       builder =>
-       {
-         builder.WithOrigins("http://localhost:4200")
-                      .AllowCredentials()
-                      .AllowAnyMethod()
-                      .AllowAnyHeader();
-       }));
-
-      services.AddSignalR();
-    }
-
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-    {
-      if (env.IsDevelopment())
-      {
-        app.UseDeveloperExceptionPage();
-      }
-      app.UseCors("CorsPolicy");
-      app.UseSignalR(routes =>
-                 {
-                   routes.MapHub<ActionHub>("/actionHub");
-                 });
-
-      app.Use(async (context, next) =>
-      {
-        await next();
-        if (context.Response.StatusCode == 404 &&
-            !Path.HasExtension(context.Request.Path.Value) &&
-            !context.Request.Path.Value.StartsWith("/api/"))
+        // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public void ConfigureServices(IServiceCollection services)
         {
-          context.Request.Path = "/index.html";
-          await next();
+            services.AddCors(options => options.AddPolicy("CorsPolicy",
+             builder =>
+             {
+                 builder.WithOrigins(new string[] { "http://localhost:4200", "https://amos-streaming.azurewebsites.net/" })
+                        .AllowCredentials()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+             }));
+
+            services.AddSignalR();
         }
-      });
-      app.UseStaticFiles();
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            app.UseCors("CorsPolicy");
+            app.UseSignalR(routes =>
+                       {
+                           routes.MapHub<ActionHub>("/actionHub");
+                       });
+
+            app.Use(async (context, next) =>
+            {
+                await next();
+                if (context.Response.StatusCode == 404 &&
+              !Path.HasExtension(context.Request.Path.Value) &&
+              !context.Request.Path.Value.StartsWith("/api/"))
+                {
+                    context.Request.Path = "/index.html";
+                    await next();
+                }
+            });
+            app.UseStaticFiles();
+        }
     }
-  }
 }
