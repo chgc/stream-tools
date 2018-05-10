@@ -9,6 +9,11 @@ export class HubService {
   private hubConnection: HubConnection;
   constructor() {
     this.hubConnection = new HubConnection(environment.hubUrl);
+    this.start();
+    this.hubConnection.onclose(() => this.start());
+  }
+
+  start() {
     this.hubConnection
       .start()
       .then(() => console.log('Connection started!'))
