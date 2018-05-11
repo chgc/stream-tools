@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HubConnection } from '@aspnet/signalr';
+import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
 import { environment } from '../environments/environment';
 
 @Injectable({
@@ -8,7 +8,7 @@ import { environment } from '../environments/environment';
 export class HubService {
   private hubConnection: HubConnection;
   constructor() {
-    this.hubConnection = new HubConnection(environment.hubUrl);
+    this.hubConnection = new HubConnectionBuilder().withUrl(environment.hubUrl).build();
     this.start();
     this.hubConnection.onclose(() => this.start());
   }
