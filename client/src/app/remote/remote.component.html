@@ -1,0 +1,6 @@
+<form [formGroup]="server">
+  <input type="text" formControlName="host" />
+  <input type="text" formControlName="port" />
+  <button type="button" (click)="connect()">登入</button>
+</form>
+<router-outlet></router-outlet>

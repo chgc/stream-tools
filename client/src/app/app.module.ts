@@ -1,16 +1,17 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Route, RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
-import { RouterModule, Route } from '@angular/router';
 import { DisplayComponent } from './display/display.component';
 import { GuestComponent } from './guest/guest.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 const routes: Route[] = [
   { path: 'display', component: DisplayComponent },
   { path: 'guest', component: GuestComponent },
-  { path: '**', redirectTo: '/guest', pathMatch: 'full' }
+  { path: 'remote', loadChildren: './remote/remote.module#RemoteModule' },
+  { path: '**', redirectTo: '/remote', pathMatch: 'full' }
 ];
 
 @NgModule({
