@@ -10,10 +10,10 @@ export const START_Y = 50;
 
 @Component({
   selector: 'app-guest',
-  templateUrl: './guest.component.html',
-  styleUrls: ['./guest.component.css']
+  templateUrl: './panel.component.html',
+  styleUrls: ['./panel.component.css']
 })
-export class GuestComponent implements OnInit {
+export class PanelComponent implements OnInit {
   buttons$ = of([
     { label: '斗內時間', value: '斗內時間', colorClass: 'btn-danger', style: {} },
     { label: '哈哈哈', value: '哈哈哈', colorClass: 'btn-warning', style: {} },

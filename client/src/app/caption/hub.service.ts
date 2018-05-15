@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
-import { environment } from '../environments/environment';
+import { environment } from '../../environments/environment';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
