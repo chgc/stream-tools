@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
-import { environment } from '../environments/environment';
+import { environment } from '../../environments/environment';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HubService {
   private hubConnection: HubConnection;
+  isStarted$ = new BehaviorSubject<boolean>(false);
   constructor() {
     this.hubConnection = new HubConnectionBuilder().withUrl(environment.hubUrl).build();
     this.start();
@@ -16,7 +18,10 @@ export class HubService {
   start() {
     this.hubConnection
       .start()
-      .then(() => console.log('Connection started!'))
+      .then(() => {
+        console.log('Connection started!');
+        this.isStarted$.next(true);
+      })
       .catch(err => console.log('Error while establishing connection :('));
   }
 
