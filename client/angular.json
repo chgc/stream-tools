@@ -101,5 +101,10 @@
       }
     }
   },
-  "defaultProject": "client"
+  "defaultProject": "client",
+  "schematics": {
+    "@schematics/angular:module": {
+      "spec": false
+    }
+  }
 }
