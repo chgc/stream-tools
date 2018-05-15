@@ -36,7 +36,10 @@ export class GuestComponent implements OnInit {
 
   constructor(private service: ToolsService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.service.init();
+    this.service.joinRoom('amos');
+  }
 
   sendMessage(value) {
     this.service.sendCommand(this.buildCommand(value));

@@ -8,7 +8,7 @@ import { DisplayComponent } from './display/display.component';
 import { GuestComponent } from './guest/guest.component';
 
 const routes: Route[] = [
-  { path: 'display', component: DisplayComponent },
+  { path: 'display/:room', component: DisplayComponent },
   { path: 'guest', component: GuestComponent },
   { path: 'remote', loadChildren: './remote/remote.module#RemoteModule' },
   { path: '**', redirectTo: '/remote', pathMatch: 'full' }

@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  hubUrl: 'http://localhost:5000/actionHub',
+  hubUrl: 'https://localhost:44326/actionHub',
   delayTime: 3000
 };
 
