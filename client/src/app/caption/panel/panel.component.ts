@@ -3,6 +3,7 @@ import { HubService } from '../hub.service';
 import { CommandModel } from '../command.interface';
 import { ToolsService } from '../tools.service';
 import { of } from 'rxjs';
+import { AuthService } from '../../auth.service';
 export const MAX_WIDTH = 1620;
 export const MAX_HEIGHT = 980;
 export const START_X = 100;
@@ -34,11 +35,19 @@ export class PanelComponent implements OnInit {
     { label: 'LIVE Demo 魔咒發生了！', value: 'LIVE Demo 魔咒發生了！', colorClass: 'btn-warning', style: {} }
   ]);
 
-  constructor(private service: ToolsService) {}
+  roomId;
+  displayUrl;
+  constructor(private authService: AuthService, private service: ToolsService) {}
 
   ngOnInit() {
     this.service.init();
-    this.service.joinRoom('amos');
+    this.authService.authState.subscribe(user => {
+      if (user) {
+        this.roomId = user.uid;
+        this.displayUrl = `${location.origin}/main/caption/display/${this.roomId}`;
+        this.service.joinRoom(this.roomId);
+      }
+    });
   }
 
   sendMessage(value) {

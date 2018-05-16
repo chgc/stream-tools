@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Router } from '@angular/router';
 import { firebase } from '@firebase/app';
+import { from } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -23,15 +24,10 @@ export class AuthService {
         provider = undefined;
         break;
     }
-    if (provider) {
-      this.afAuth.auth.signInWithPopup(provider).then(this.redirectToPopup());
-    }
+    return from(this.afAuth.auth.signInWithPopup(provider));
   }
 
   signOut() {
     this.afAuth.auth.signOut().then(() => this.router.navigate(['/login']));
-  }
-  private redirectToPopup() {
-    return () => this.router.navigate(['/remote']);
   }
 }

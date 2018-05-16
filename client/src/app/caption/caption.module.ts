@@ -4,10 +4,7 @@ import { RouterModule } from '@angular/router';
 import { DisplayComponent } from './display/display.component';
 import { PanelComponent } from './panel/panel.component';
 
-export const routes = [
-  { path: 'display/:room', component: DisplayComponent },
-  { path: 'panel', component: PanelComponent }
-];
+export const routes = [{ path: 'display/:room', component: DisplayComponent }, { path: '', component: PanelComponent }];
 
 @NgModule({
   imports: [CommonModule, RouterModule.forChild(routes)],
