@@ -8,13 +8,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   signInWithSocial(loginProvider) {
     this.authService.signInWithSocial(loginProvider).subscribe(value => {
-      console.log(value);
       this.router.navigate(['/main/remote']);
     });
   }
