@@ -10,29 +10,20 @@ export class AuthService {
   authState = this.afAuth.authState;
   constructor(public afAuth: AngularFireAuth, private router: Router) {}
 
-  signInAnonymously() {
-    return this.afAuth.auth.signInAnonymously().then(this.redirectToPopup());
-  }
-
-  signInWithSocial(loginProvider) {
+  signInWithSocial(loginProvider: 'google' | 'github') {
     let provider;
     switch (loginProvider) {
       case 'google':
         provider = new firebase.auth.GoogleAuthProvider();
         break;
       case 'github':
-        provider = new firebase.auth.GoogleAuthProvider();
+        provider = new firebase.auth.GithubAuthProvider();
+        break;
+      default:
+        provider = undefined;
         break;
     }
-    if (!provider) {
-      return;
-    }
-    if (firebase.auth().currentUser !== null && firebase.auth().currentUser.isAnonymous === true) {
-      firebase
-        .auth()
-        .currentUser.linkWithPopup(provider)
-        .then(this.redirectToPopup());
-    } else {
+    if (provider) {
       this.afAuth.auth.signInWithPopup(provider).then(this.redirectToPopup());
     }
   }

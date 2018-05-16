@@ -5,11 +5,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Route, RouterModule } from '@angular/router';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireAuthModule } from 'angularfire2/auth';
-import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
+import { AppComponent } from './app.component';
 import { LoginComponent } from './main/login/login.component';
 import { MainModule } from './main/main.module';
-
 const routes: Route[] = [
   { path: 'login', component: LoginComponent },
   {
