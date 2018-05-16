@@ -39,8 +39,7 @@ export class DisplayComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.service.init();
     this.tasks$.pipe(mergeMap(task => task)).subscribe();
-    this.message$.subscribe(value => {
-      this.messages.push({ ...value });
+    this.message$.pipe(tap(value => this.messages.push({ ...value }))).subscribe(value => {
       this.tasks$.next(this.remover$);
     });
   }
