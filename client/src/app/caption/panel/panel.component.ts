@@ -27,6 +27,7 @@ import {
   styleUrls: ['./panel.component.css']
 })
 export class PanelComponent implements OnInit {
+  // region
   // buttons$ = of([
   //   { label: '斗內時間', value: '斗內時間', colorClass: 'btn-danger', style: {} },
   //   { label: '哈哈哈', value: '哈哈哈', colorClass: 'btn-warning', style: {} },
@@ -46,6 +47,8 @@ export class PanelComponent implements OnInit {
   //   { label: '幻覺！全都是幻覺', value: '幻覺！全都是幻覺', colorClass: 'btn-primary', style: {} },
   //   { label: 'LIVE Demo 魔咒發生了！', value: 'LIVE Demo 魔咒發生了！', colorClass: 'btn-warning', style: {} }
   // ]);
+  // endregion
+
   @Select(state => state.captions)
   items$;
   @Select(state => state.environement.displayUrl)
@@ -75,23 +78,24 @@ export class PanelComponent implements OnInit {
 
     const joinRoom = (context, userId) => context.service.joinRoom(userId);
 
+    const setUserID = userId => {
+      joinRoom(this, userId);
+      this.store.dispatch(new SetUserID(userId));
+    };
+    const loadData = userId =>
+      this.store.dispatch([
+        new SetDisplayUrl(),
+        new GetCaptionList(),
+        new GetAreaPosition(),
+        new GetCustomCSS()
+      ]);
+
     this.authService.authState
       .pipe(
         filter(user => !!user),
         map(user => user.uid),
-        tap(userId => {
-          joinRoom(this, userId);
-        }),
-        tap(userId => this.store.dispatch(new SetUserID(userId))),
-        tap(userId => {
-          this.store.dispatch([
-            new SetDisplayUrl(),
-            new GetCaptionList(),
-            new GetAreaPosition(),
-            new GetCustomCSS()
-          ]);
-          // this.store.dispatch([]);
-        })
+        tap(setUserID),
+        tap(loadData)
       )
       .subscribe();
   }
