@@ -22,12 +22,15 @@
     "@angular/router": "^6.0.1",
     "@aspnet/signalr": "^1.0.0-rc1-update1",
     "@ngxs/store": "^3.0.1",
+    "angular2-template-loader": "^0.6.2",
     "angularfire2": "^5.0.0-rc.8.0",
     "core-js": "^2.5.4",
+    "electron": "^2.0.1",
     "firebase": "^5.0.2",
     "rxjs": "^6.0.0",
     "rxjs-compat": "^6.1.0",
     "sha.js": "^2.4.11",
+    "wallaby-webpack": "^3.9.8",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
