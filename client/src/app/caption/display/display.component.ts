@@ -3,8 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable, Subject, of } from 'rxjs';
 import { delay, mergeMap, takeUntil, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { CommandModel } from '../command.interface';
-import { ToolsService } from '../tools.service';
+import { CommandModel } from '../services/command.interface';
+import { ToolsService } from '../services/tools.service';
 
 @Component({
   selector: 'app-display',

@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
 import { filter, map, mergeMap, tap } from 'rxjs/operators';
 import { AuthService } from '../../auth.service';
-import { CaptionService } from '../caption.service';
-import { CommandModel } from '../command.interface';
-import { ToolsService } from '../tools.service';
+import { CaptionService } from '../services/caption.service';
+import { CommandModel } from '../services/command.interface';
+import { ToolsService } from '../services/tools.service';
 
 @Component({
   selector: 'app-guest',
@@ -39,27 +39,39 @@ export class PanelComponent implements OnInit {
     MAX_HEIGHT: 980,
     START_X: 100,
     START_Y: 50
-  }
+  };
 
-  constructor(private authService: AuthService, private captionService: CaptionService, private service: ToolsService) { }
+  constructor(
+    private authService: AuthService,
+    private captionService: CaptionService,
+    private service: ToolsService
+  ) {}
 
   ngOnInit() {
     this.service.init();
 
     const joinRoom = (context, userId) => context.service.joinRoom(userId);
-    const setDisplayUrl = (context, userId) => context.displayUrl = `${location.origin}/main/caption/display/${userId}`;
-    const setCaptionsList = (context, userId) => context.buttons$ = context.captionService.getCaptionList(userId);
-    const getEnvironmentVariable = (context) => userId => forkJoin(context.captionService.getAreaPosition(), context.captionService.getCustomCSS());
+    const setDisplayUrl = (context, userId) =>
+      (context.displayUrl = `${location.origin}/main/caption/display/${userId}`);
+    const setCaptionsList = (context, userId) => (context.buttons$ = context.captionService.getCaptionList(userId));
+    const getEnvironmentVariable = context => userId =>
+      forkJoin(context.captionService.getAreaPosition(), context.captionService.getCustomCSS());
 
-    this.authService.authState.pipe(filter(user => !!user), map(user => user.uid), tap(userId => {
-      joinRoom(this, userId);
-      setDisplayUrl(this, userId);
-      setCaptionsList(this, userId);
-    }), mergeMap(getEnvironmentVariable(this))
-    ).subscribe(([areaPosition, customCss]) => {
-      this.areaPosition = areaPosition as any;
-      this.customCSS = customCss as string;
-    });
+    this.authService.authState
+      .pipe(
+        filter(user => !!user),
+        map(user => user.uid),
+        tap(userId => {
+          joinRoom(this, userId);
+          setDisplayUrl(this, userId);
+          setCaptionsList(this, userId);
+        }),
+        mergeMap(getEnvironmentVariable(this))
+      )
+      .subscribe(([areaPosition, customCss]) => {
+        this.areaPosition = areaPosition as any;
+        this.customCSS = customCss as string;
+      });
   }
   sendMessage(value) {
     this.service.sendCommand(this.buildCommand(value));
