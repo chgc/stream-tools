@@ -1,5 +1,5 @@
 import { ObsService } from './obs.service';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { ObsSocketService } from './obs-socket.service';
 
 describe('ObsService', () => {
@@ -19,6 +19,13 @@ describe('ObsService', () => {
 
   it('should create ObsService', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('should return channel$', () => {
+    service.connect();
+    service.channel$.subscribe(obs => {
+      expect(obs).toEqual(service['obs$']);
+    });
   });
 
   it('requestTask should return an id and type', () => {
