@@ -17,7 +17,7 @@ describe('ObsService', () => {
     ObsSocketServiceSpy.connect.and.returnValue(mockObs);
   });
 
-  it('it should create ObsService', () => {
+  it('should create ObsService', () => {
     expect(service).toBeTruthy();
   });
 
@@ -27,11 +27,31 @@ describe('ObsService', () => {
     expect(type).toBe('test');
   });
 
-  it('it should create a request command with message-id', () => {
+  it('should create a request command with message-id', () => {
     service.connect();
     mockObs.subscribe(value => {
-      console.log(value);
+      expect(value).toEqual({ 'message-id': '2', 'request-type': 'test' });
     });
     service.requestCommand(service.requestTask('test'));
+  });
+
+  it('should clear task list if there is more than 100 tasks', () => {
+    for (let i = 0; i < 51; ++i) {
+      service.requestTask(i);
+    }
+    expect(service['task'].size).toBe(1);
+  });
+
+  it('should be able to get action type from Task with id', () => {
+    const { id, type } = service.requestTask('mockAction');
+    expect(service.getActionType({ 'message-id': id })).toEqual({
+      id,
+      actionType: type
+    });
+  });
+
+  it('it should stop', () => {
+    service.disconnect();
+    expect(service['obs$']).toBeUndefined();
   });
 });

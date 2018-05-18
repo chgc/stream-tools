@@ -39,7 +39,7 @@ export class ObsService {
   requestCommand = request => this.send$.next(request);
 
   requestTask(type) {
-    if (this.task.size > 100) {
+    if (this.task.size >= 50) {
       this.task.clear();
     }
     const id = this.nextId();
