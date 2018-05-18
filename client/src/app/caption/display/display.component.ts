@@ -27,7 +27,10 @@ export class DisplayComponent implements OnInit, OnDestroy {
   message$ = this.service.message$;
   messages: CommandModel[] = [];
   tasks$ = new Subject<Observable<any>>();
-  remover$ = of('').pipe(delay(environment.delayTime), tap(() => this.messages.shift()));
+  remover$ = of('').pipe(
+    delay(environment.delayTime),
+    tap(() => this.messages.shift())
+  );
   destroy$ = new Subject();
 
   constructor(private service: ToolsService, private route: ActivatedRoute) {
@@ -39,9 +42,11 @@ export class DisplayComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.service.init();
     this.tasks$.pipe(mergeMap(task => task)).subscribe();
-    this.message$.pipe(tap(value => this.messages.push({ ...value }))).subscribe(value => {
-      this.tasks$.next(this.remover$);
-    });
+    this.message$
+      .pipe(tap(value => this.messages.push({ ...value })))
+      .subscribe(value => {
+        this.tasks$.next(this.remover$);
+      });
   }
 
   ngOnDestroy() {

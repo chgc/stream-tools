@@ -37,9 +37,12 @@ export class ToolsService {
   }
 
   addReceiveCommand() {
-    this.hubService.registerMethods('ReceiveCommand', (receivedMessage: string) => {
-      this.message$.next(JSON.parse(receivedMessage));
-    });
+    this.hubService.registerMethods(
+      'ReceiveCommand',
+      (receivedMessage: string) => {
+        this.message$.next(JSON.parse(receivedMessage));
+      }
+    );
   }
 
   sendCommand(command) {

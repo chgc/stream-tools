@@ -5,6 +5,21 @@ import { AuthService } from '../../auth.service';
 import { CaptionService } from '../services/caption.service';
 import { CommandModel } from '../services/command.interface';
 import { ToolsService } from '../services/tools.service';
+import { Store, Select } from '@ngxs/store';
+import {
+  SetDisplayUrl,
+  GetAreaPosition,
+  GetCustomCSS,
+  SetUserID,
+  SetAreaPosition,
+  SetCustomCSS
+} from '../sotre/environment.action';
+import {
+  GetCaptionList,
+  UpdateCaption,
+  RemoveCaption,
+  AddCaption
+} from '../sotre/caption-items.action';
 
 @Component({
   selector: 'app-guest',
@@ -31,8 +46,11 @@ export class PanelComponent implements OnInit {
   //   { label: '幻覺！全都是幻覺', value: '幻覺！全都是幻覺', colorClass: 'btn-primary', style: {} },
   //   { label: 'LIVE Demo 魔咒發生了！', value: 'LIVE Demo 魔咒發生了！', colorClass: 'btn-warning', style: {} }
   // ]);
-  buttons$;
-  displayUrl;
+  @Select(state => state.captions)
+  items$;
+  @Select(state => state.environement.displayUrl)
+  displayUrl$;
+
   customCSS = '';
   areaPosition = {
     MAX_WIDTH: 1620,
@@ -43,19 +61,19 @@ export class PanelComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private captionService: CaptionService,
-    private service: ToolsService
+    private service: ToolsService,
+    private store: Store
   ) {}
 
   ngOnInit() {
+    this.store.select(state => state.environement).subscribe(caption => {
+      this.areaPosition = caption.areaPosition;
+      this.customCSS = caption.customCSS;
+    });
+
     this.service.init();
 
     const joinRoom = (context, userId) => context.service.joinRoom(userId);
-    const setDisplayUrl = (context, userId) =>
-      (context.displayUrl = `${location.origin}/main/caption/display/${userId}`);
-    const setCaptionsList = (context, userId) => (context.buttons$ = context.captionService.getCaptionList(userId));
-    const getEnvironmentVariable = context => userId =>
-      forkJoin(context.captionService.getAreaPosition(), context.captionService.getCustomCSS());
 
     this.authService.authState
       .pipe(
@@ -63,15 +81,19 @@ export class PanelComponent implements OnInit {
         map(user => user.uid),
         tap(userId => {
           joinRoom(this, userId);
-          setDisplayUrl(this, userId);
-          setCaptionsList(this, userId);
         }),
-        mergeMap(getEnvironmentVariable(this))
+        tap(userId => this.store.dispatch(new SetUserID(userId))),
+        tap(userId => {
+          this.store.dispatch([
+            new SetDisplayUrl(),
+            new GetCaptionList(),
+            new GetAreaPosition(),
+            new GetCustomCSS()
+          ]);
+          // this.store.dispatch([]);
+        })
       )
-      .subscribe(([areaPosition, customCss]) => {
-        this.areaPosition = areaPosition as any;
-        this.customCSS = customCss as string;
-      });
+      .subscribe();
   }
   sendMessage(value) {
     this.service.sendCommand(this.buildCommand(value));
@@ -83,8 +105,14 @@ export class PanelComponent implements OnInit {
       message: value,
       className: `fz${this.getRandomNumber(1, 5)}`,
       style: {
-        left: `${this.getRandomNumber(this.areaPosition.START_X, this.areaPosition.MAX_WIDTH)}px`,
-        top: `${this.getRandomNumber(this.areaPosition.START_Y, this.areaPosition.MAX_HEIGHT)}px`,
+        left: `${this.getRandomNumber(
+          this.areaPosition.START_X,
+          this.areaPosition.MAX_WIDTH
+        )}px`,
+        top: `${this.getRandomNumber(
+          this.areaPosition.START_Y,
+          this.areaPosition.MAX_HEIGHT
+        )}px`,
         transform: `rotate(${this.getRandomNumber(-45, 90)}deg)`
       }
     };
@@ -95,22 +123,22 @@ export class PanelComponent implements OnInit {
   }
 
   addCaption(item) {
-    this.captionService.createAndUpdateCaption(null, item);
+    this.store.dispatch(new AddCaption(item));
   }
 
   saveCaption(item) {
-    this.captionService.createAndUpdateCaption(item.id, item);
+    this.store.dispatch(new UpdateCaption(item));
   }
 
   removeCaption(item) {
-    this.captionService.removeCaption(item.id);
+    this.store.dispatch(new RemoveCaption(item.id));
   }
 
   setAreaPosition() {
-    this.captionService.setAreaPosition(this.areaPosition);
+    this.store.dispatch(new SetAreaPosition(this.areaPosition));
   }
 
   setCustomCSS(customCSS) {
-    this.captionService.setCustomCSS(customCSS);
+    this.store.dispatch(new SetCustomCSS(customCSS));
   }
 }
