@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin, of, Observable } from 'rxjs';
 import { filter, map, mergeMap, tap } from 'rxjs/operators';
 import { AuthService } from '../../auth.service';
 import { CaptionService } from '../services/caption.service';
@@ -50,7 +50,7 @@ export class PanelComponent implements OnInit {
   // endregion
 
   @Select(state => state.captions)
-  items$;
+  items$: Observable<any>;
   @Select(state => state.environement.displayUrl)
   displayUrl$;
 

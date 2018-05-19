@@ -1,22 +1,28 @@
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  async,
+  fakeAsync,
+  tick
+} from '@angular/core/testing';
 import { NgxsModule, Store } from '@ngxs/store';
 import { of } from 'rxjs';
 import { AuthService } from '../../auth.service';
-import { ToolsService } from '../services/tools.service';
-import { EnvironmentState } from '../sotre/environment.state';
-import { PanelComponent } from './panel.component';
-import { CaptionItemsState } from '../sotre/caption-items.state';
 import { CaptionService } from '../services/caption.service';
-import { Command } from 'selenium-webdriver';
+import { ToolsService } from '../services/tools.service';
 import {
   AddCaption,
+  RemoveCaption,
   UpdateCaption,
-  RemoveCaption
+  GetCaptionList
 } from '../sotre/caption-items.action';
-import { SetCustomCSS, SetAreaPosition } from '../sotre/environment.action';
+import { CaptionItemsState } from '../sotre/caption-items.state';
+import { SetAreaPosition, SetCustomCSS } from '../sotre/environment.action';
+import { EnvironmentState } from '../sotre/environment.state';
+import { PanelComponent } from './panel.component';
 
 export class FakeAuthService {
-  authState = of({ uid: 123 });
+  authState = of({ uid: 1 });
 }
 
 describe('panelComponent', () => {
@@ -28,7 +34,8 @@ describe('panelComponent', () => {
     'sendCommand'
   ]);
   const fakeCaptionService = jasmine.createSpyObj('fakeCaptionService', [
-    'initFireStore'
+    'initFireStore',
+    'getCaptionList'
   ]);
   let store: Store;
 
@@ -123,5 +130,41 @@ describe('panelComponent', () => {
     spyOn(store, 'dispatch');
     component.setCustomCSS(customCSS);
     expect(store.dispatch).toHaveBeenCalledWith(new SetCustomCSS(customCSS));
+  });
+
+  describe('Integrated Testing', () => {
+    beforeEach(() => {
+      fakeCaptionService.getCaptionList.and.returnValue(
+        of([
+          {
+            label: '斗內時間',
+            value: '斗內時間',
+            colorClass: 'btn-danger',
+            style: {}
+          }
+        ])
+      );
+      store.dispatch(new GetCaptionList());
+    });
+
+    it('should render one button', () => {
+      const elements: HTMLElement = fixture.debugElement.nativeElement;
+      fixture.detectChanges();
+      const btns = elements.querySelectorAll('button');
+      expect(btns.length).toEqual(1);
+      const btn = btns[0];
+      expect(btn.innerHTML).toContain('斗內時間');
+      expect(btn.classList).toContain('btn-danger');
+    });
+
+    it('should send message when button click', () => {
+      const elements: HTMLElement = fixture.debugElement.nativeElement;
+      spyOn(component, 'sendMessage');
+      fixture.detectChanges();
+      const btn = elements.querySelector('button');
+      btn.click();
+      expect(component.sendMessage).toHaveBeenCalled();
+      expect(component.sendMessage).toHaveBeenCalledWith('斗內時間');
+    });
   });
 });
