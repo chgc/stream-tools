@@ -34,11 +34,11 @@ export class ObsService {
     tap(message => this.obs$.next(message))
   );
 
-  private nextId = (): string => String(++this.messageId);
+  private nextId = () => String(++this.messageId);
 
   requestCommand = request => this.send$.next(request);
 
-  requestTask(type) {
+  requestTask(type: string) {
     if (this.task.size >= 50) {
       this.task.clear();
     }

@@ -3,20 +3,19 @@ import { of } from 'rxjs';
 import { CaptionService } from './caption.service';
 import { AngularFirestore } from 'angularfire2/firestore';
 
-export class FakeAngularFirestore {
-  doc(path) {}
-  createId() {}
-}
-
 describe('CaptionService', () => {
   let service: CaptionService;
   let af: AngularFirestore;
+  const FakeAngularFirestore = {
+    doc: path => {},
+    createId: () => {}
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         CaptionService,
-        { provide: AngularFirestore, useClass: FakeAngularFirestore }
+        { provide: AngularFirestore, useValue: FakeAngularFirestore }
       ]
     });
 
@@ -52,24 +51,26 @@ describe('CaptionService', () => {
     } as any;
 
     service.getCaptionList().subscribe(result => {
-      console.log(result);
       expect(result.length).toBe(1);
       expect(result[0]).toEqual({ id: 1, name: 'test' });
     });
   });
 
-  it('should createAndUpdate Caption', () => {
+  it('should createAndUpdate Caption', async () => {
+    const fakeItem = { label: 'test', caption: 'test' };
     service.myCaptionDocument = {
       collection: arg => ({
         doc: () => ({
-          set: (item, options?) => item
+          set: (item, options?) => Promise.resolve()
         })
       })
     } as any;
     spyOn(af, 'createId');
-    service.createAndUpdateCaption(null, {});
+    service.createAndUpdateCaption(null, fakeItem);
     expect(af.createId).toHaveBeenCalled();
-    expect(service.createAndUpdateCaption(1, {})).toEqual({});
+
+    const result = await service.createAndUpdateCaption(1, fakeItem);
+    expect(result).toBeUndefined();
   });
 
   it('should remove caption', () => {

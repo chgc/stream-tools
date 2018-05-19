@@ -51,6 +51,7 @@ export class PanelComponent implements OnInit {
 
   @Select(state => state.captions)
   items$: Observable<any>;
+
   @Select(state => state.environement.displayUrl)
   displayUrl$;
 

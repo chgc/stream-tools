@@ -1,15 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { Router, RouterStateSnapshot } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 
-export class FakeAuthServiceSpy {
-  authState: Observable<any> = of('user');
-}
-
 describe('ConnectGuard', () => {
   const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+  const FakeAuthServiceSpy = {
+    authState: of('user')
+  };
 
   let guard: AuthGuard;
   let authService: AuthService;
@@ -18,7 +17,7 @@ describe('ConnectGuard', () => {
     TestBed.configureTestingModule({
       providers: [
         AuthGuard,
-        { provide: AuthService, useClass: FakeAuthServiceSpy },
+        { provide: AuthService, useValue: FakeAuthServiceSpy },
         { provide: Router, useValue: routerSpy }
       ]
     });
@@ -32,30 +31,32 @@ describe('ConnectGuard', () => {
   });
 
   it('should return true when user is login', () => {
-    (guard.canActivateChild(null, { url: '' } as any) as Observable<
-      boolean
-    >).subscribe(value => {
-      expect(value).toBe(true);
-    });
+    guard
+      .canActivateChild(null, { url: '' } as RouterStateSnapshot)
+      .subscribe(value => {
+        expect(value).toBe(true);
+      });
   });
 
   it('should return true when url is display', () => {
-    (guard.canActivateChild(null, {
-      url: 'main/caption/display/123456'
-    } as any) as Observable<boolean>).subscribe(value => {
-      expect(value).toBe(true);
-    });
+    guard
+      .canActivateChild(null, {
+        url: 'main/caption/display/123456'
+      } as RouterStateSnapshot)
+      .subscribe(value => {
+        expect(value).toBe(true);
+      });
   });
 
   it('should return true when user is login', () => {
     authService.authState = of(null);
 
-    (guard.canActivateChild(null, { url: '' } as any) as Observable<
-      boolean
-    >).subscribe(value => {
-      const navArgs = routerSpy.navigate.calls.first().args[0];
-      expect(navArgs[0]).toContain('/login');
-      expect(value).toBe(false);
-    });
+    guard
+      .canActivateChild(null, { url: '' } as RouterStateSnapshot)
+      .subscribe(value => {
+        const navArgs = routerSpy.navigate.calls.first().args[0];
+        expect(navArgs[0]).toContain('/login');
+        expect(value).toBe(false);
+      });
   });
 });

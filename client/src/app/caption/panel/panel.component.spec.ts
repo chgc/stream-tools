@@ -1,3 +1,4 @@
+// #region
 import {
   ComponentFixture,
   TestBed,
@@ -20,14 +21,15 @@ import { CaptionItemsState } from '../sotre/caption-items.state';
 import { SetAreaPosition, SetCustomCSS } from '../sotre/environment.action';
 import { EnvironmentState } from '../sotre/environment.state';
 import { PanelComponent } from './panel.component';
-
-export class FakeAuthService {
-  authState = of({ uid: 1 });
-}
+// #endregion
 
 describe('panelComponent', () => {
   let component: PanelComponent;
   let fixture: ComponentFixture<PanelComponent>;
+  const FakeAuthService = {
+    authState: of({ uid: 1 })
+  } as any;
+
   const fakeToolsService = jasmine.createSpyObj('ToolsService', [
     'init',
     'joinRoom',
@@ -44,7 +46,7 @@ describe('panelComponent', () => {
       declarations: [PanelComponent],
       imports: [NgxsModule.forRoot([EnvironmentState, CaptionItemsState])],
       providers: [
-        { provide: AuthService, useClass: FakeAuthService },
+        { provide: AuthService, useValue: FakeAuthService },
         { provide: ToolsService, useValue: fakeToolsService },
         { provide: CaptionService, useValue: fakeCaptionService }
       ]
@@ -93,7 +95,8 @@ describe('panelComponent', () => {
   });
 
   it('should return number', () => {
-    expect(component.getRandomNumber(0, 0)).toBe(0);
+    spyOn(Math, 'random').and.returnValue(0.5);
+    expect(component.getRandomNumber(1, 10)).toBe(6);
   });
 
   it('should dispatch AddCaption', () => {
@@ -132,7 +135,8 @@ describe('panelComponent', () => {
     expect(store.dispatch).toHaveBeenCalledWith(new SetCustomCSS(customCSS));
   });
 
-  describe('Integrated Testing', () => {
+  describe('button Integrated Testing', () => {
+    let elements: HTMLElement;
     beforeEach(() => {
       fakeCaptionService.getCaptionList.and.returnValue(
         of([
@@ -145,11 +149,12 @@ describe('panelComponent', () => {
         ])
       );
       store.dispatch(new GetCaptionList());
+
+      elements = fixture.debugElement.nativeElement;
+      fixture.detectChanges();
     });
 
     it('should render one button', () => {
-      const elements: HTMLElement = fixture.debugElement.nativeElement;
-      fixture.detectChanges();
       const btns = elements.querySelectorAll('button');
       expect(btns.length).toEqual(1);
       const btn = btns[0];
@@ -158,9 +163,7 @@ describe('panelComponent', () => {
     });
 
     it('should send message when button click', () => {
-      const elements: HTMLElement = fixture.debugElement.nativeElement;
       spyOn(component, 'sendMessage');
-      fixture.detectChanges();
       const btn = elements.querySelector('button');
       btn.click();
       expect(component.sendMessage).toHaveBeenCalled();
