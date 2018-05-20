@@ -22,7 +22,11 @@ module.exports = function(wallaby) {
           include: /node_modules/,
           query: { tsConfigPath: 'tsconfig.json' }
         },
-        { test: /\.js$/, loader: 'angular2-template-loader', exclude: /node_modules/ },
+        {
+          test: /\.js$/,
+          loader: 'angular2-template-loader',
+          exclude: /node_modules/
+        },
         { test: /\.json$/, loader: 'json-loader' },
         { test: /\.styl$/, loaders: ['raw-loader', 'stylus-loader'] },
         { test: /\.less$/, loaders: ['raw-loader', 'less-loader'] },
@@ -49,12 +53,18 @@ module.exports = function(wallaby) {
 
   return {
     files: [
-      { pattern: 'src/**/*.+(ts|css|less|scss|sass|styl|html|json|svg)', load: false },
+      {
+        pattern: 'src/**/*.+(ts|css|less|scss|sass|styl|html|json|svg)',
+        load: false
+      },
       { pattern: 'src/**/*.d.ts', ignore: true },
       { pattern: 'src/**/*spec.ts', ignore: true }
     ],
 
-    tests: [{ pattern: 'src/**/*spec.ts', load: false }, { pattern: 'src/**/*e2e-spec.ts', ignore: true }],
+    tests: [
+      { pattern: 'src/**/*spec.ts', load: false },
+      { pattern: 'src/**/*e2e-spec.ts', ignore: true }
+    ],
 
     testFramework: 'jasmine',
 
@@ -64,12 +74,15 @@ module.exports = function(wallaby) {
 
     middleware: function(app, express) {
       var path = require('path');
-      app.use('/favicon.ico', express.static(path.join(__dirname, 'src/favicon.ico')));
+      app.use(
+        '/favicon.ico',
+        express.static(path.join(__dirname, 'src/favicon.ico'))
+      );
       app.use('/assets', express.static(path.join(__dirname, 'src/assets')));
     },
 
     env: {
-      kind: 'electron'
+      kind: 'chrome'
     },
 
     postprocessor: webpackPostprocessor,
