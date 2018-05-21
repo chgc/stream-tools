@@ -23,7 +23,7 @@ export class CaptionService {
     const mapData = actions =>
       actions.map(action => {
         const data = action.payload.doc.data();
-        const id = action.payload.id;
+        const id = action.payload.doc.id;
         return { id, ...data };
       });
 
@@ -38,7 +38,7 @@ export class CaptionService {
     return this.myCaptionDocument
       .collection('captions')
       .doc(id)
-      .set(item, { merge: true });
+      .set(item);
   }
 
   removeCaption(id) {
