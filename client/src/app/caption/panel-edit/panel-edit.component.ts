@@ -88,13 +88,6 @@ export class PanelEditComponent implements OnInit, OnDestroy {
 
   setFormGroup(caption) {
     this.destroy$.next();
-    caption = {
-      id: caption.id,
-      label: caption.label,
-      value: caption.value,
-      colorClass: caption.colorClass,
-      style: caption.style
-    };
     try {
       caption = {
         ...caption,
@@ -123,13 +116,10 @@ export class PanelEditComponent implements OnInit, OnDestroy {
       return;
     }
     formValue = formValue || this.editGroups.getRawValue();
-    if (formValue.style === '') {
-      formValue.style = '{}';
-    }
     try {
       formValue = {
         ...formValue,
-        style: JSON.parse(formValue.style)
+        style: JSON.parse(formValue.style || '{}')
       };
     } catch {}
     if (formValue.id) {
