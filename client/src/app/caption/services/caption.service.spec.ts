@@ -37,8 +37,8 @@ describe('CaptionService', () => {
     const data = [
       {
         payload: {
-          id: 1,
           doc: {
+            id: 1,
             data: () => ({ name: 'test' })
           }
         }
