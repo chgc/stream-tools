@@ -7,6 +7,7 @@ import { SourcesState } from './store/source.state';
 import { TransitionState } from './store/transition.state';
 import { NgxsModule } from '@ngxs/store';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 const routes = [
   {
@@ -18,8 +19,14 @@ const routes = [
 @NgModule({
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     RouterModule.forChild(routes),
-    NgxsModule.forFeature([ObsState, ScenesState, SourcesState, TransitionState])
+    NgxsModule.forFeature([
+      ObsState,
+      ScenesState,
+      SourcesState,
+      TransitionState
+    ])
   ],
   declarations: [DashboardComponent]
 })

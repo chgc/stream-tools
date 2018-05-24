@@ -13,7 +13,8 @@ import {
   ObsDispatchEvent,
   ObsRecordingToggle,
   ObsStreamingStatus,
-  ObsStreamingToggle
+  ObsStreamingToggle,
+  ObsError
 } from './obs.actions';
 import { ScenesState } from './scenes.state';
 export interface ObsModel {
@@ -73,6 +74,8 @@ export class ObsState {
   @Action(ObsDisconnect)
   disconnect(ctx: StateContext<ObsModel>, action: ObsDisconnect) {
     this.service.disconnect();
+    const state = ctx.getState();
+    ctx.setState({ ...state, isConnect: false });
     this.destroy$.next('');
   }
 
@@ -83,7 +86,16 @@ export class ObsState {
         takeUntil(this.destroy$),
         filter(response => response['update-type'] !== 'Heartbeat')
       )
-      .subscribe(response => ctx.dispatch(new ObsDispatchEvent(response)));
+      .subscribe(
+        response => ctx.dispatch(new ObsDispatchEvent(response)),
+        error => ctx.dispatch(new ObsError())
+      );
+  }
+
+  @Action(ObsError)
+  obsOnError(ctx: StateContext<ObsModel>, action: ObsError) {
+    const state = ctx.getState();
+    ctx.setState({ ...state, isConnect: false });
   }
 
   @Action(ObsStreamingStatus)
@@ -114,8 +126,8 @@ export class ObsState {
       this.processUpdateEvent(ctx, action);
       return;
     }
-    const { id, actionType } = this.service.getActionType(action.payload);
     const state = ctx.getState();
+    const { id, actionType } = this.service.getActionType(action.payload);
     switch (actionType) {
       case 'GetSceneList':
         ctx.setState({

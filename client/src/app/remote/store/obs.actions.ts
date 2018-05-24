@@ -11,6 +11,10 @@ export class ObsConnected {
   static readonly type = '[obs] Connected';
 }
 
+export class ObsError {
+  static readonly type = '[obs] error occurs';
+}
+
 export class ObsDispatchEvent {
   static readonly type = '[obs] dispatchEvent';
   constructor(public payload: any) {}

@@ -1,0 +1,49 @@
+<div *ngIf="!(isConnect$ | async)">
+  <form class="form-inline" [formGroup]="connectInfo" (ngSubmit)="connect()">
+    <div class="form-group">
+      <label class="sr-only" for="exampleInputEmail3">Host</label>
+      <input type="text" class="form-control" formControlName="host" placeholder="Host">
+    </div>
+    <div class="form-group">
+      <label class="sr-only" for="exampleInputPassword3">Port</label>
+      <input type="text" class="form-control" formControlName="port" placeholder="Port">
+    </div>
+    <div class="form-check">
+      <input type="checkbox" id="auto" class="form-check-input" formControlName="auto">
+      <label class="form-check-label" for="auto">自動連接</label>
+    </div>
+    <button type="submit" class="btn">連接</button>
+  </form>
+</div>
+
+<div *ngIf="isConnect$  | async">
+
+  <section>
+    <button class="btn btn-primary" (click)="toggleStreaming()">
+      {{ displayStreamingButton$ | async }}
+    </button>
+    <button class="btn btn-primary" (click)="toggleRecording()">
+      {{ displayRecordingButton$ | async }}
+    </button>
+    <button class="btn btn-primary" (click)="disconnect()">
+      中斷連線
+    </button>
+  </section>
+  <section>
+    <!--場景-->
+    <form name="sceneGroups" [formGroup]="sceneGroups">
+      <label class="fake-btn" *ngFor="let scene of scenes$ | async">
+        <input type="radio" class="radio" name="scene" [value]="scene.name" formControlName="scene">
+        <span class="txt">{{ scene.name }}</span>
+      </label>
+    </form>
+  </section>
+
+  <!-- source -->
+  <label class="fake-btn" *ngFor="let source of sources$ | async">
+    <input type="checkbox" class="checkbox" [value]="source.name" [checked]="source.render" (change)="toggleRender(source)">
+    <span class="txt">{{ source.name }}</span>
+  </label>
+
+
+</div>
