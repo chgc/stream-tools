@@ -9,19 +9,7 @@ import { ToolsService } from '../services/tools.service';
 @Component({
   selector: 'app-display',
   templateUrl: './display.component.html',
-  styleUrls: ['./display.component.css'],
-  animations: [
-    // trigger('listAnimation', [
-    //   transition('* => *', [
-    //     query(':enter', [style({ opacity: 0 }), stagger(100, [animate('0.5s', style({ opacity: 1 }))])], {
-    //       optional: true
-    //     }),
-    //     query(':leave', [stagger(100, [animate('0.5s', style({ opacity: 0 }))])], {
-    //       optional: true
-    //     })
-    //   ])
-    // ])
-  ]
+  styleUrls: ['./display.component.css']
 })
 export class DisplayComponent implements OnInit, OnDestroy {
   message$ = this.service.message$;

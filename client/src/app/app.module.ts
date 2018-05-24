@@ -12,18 +12,23 @@ import { AppComponent } from './app.component';
 import { AuthGuard } from './auth.guard';
 import { LoginComponent } from './main/login/login.component';
 import { MainModule } from './main/main.module';
+import { MainComponent } from './main/main/main.component';
 
 const routes: Route[] = [
   { path: 'login', component: LoginComponent },
   {
     path: 'main',
     canActivateChild: [AuthGuard],
+    component: MainComponent,
     children: [
-      { path: 'caption', loadChildren: './caption/caption.module#CaptionModule' },
+      {
+        path: 'caption',
+        loadChildren: './caption/caption.module#CaptionModule'
+      },
       { path: 'remote', loadChildren: './remote/remote.module#RemoteModule' }
     ]
   },
-  { path: '**', redirectTo: '/login', pathMatch: 'full' }
+  { path: '**', redirectTo: '/main/remote', pathMatch: 'full' }
 ];
 
 @NgModule({
@@ -42,4 +47,4 @@ const routes: Route[] = [
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
