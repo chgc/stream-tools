@@ -9,10 +9,10 @@ import {
 } from '@store/obs.actions';
 import { ScenesSwitch } from '@store/scene.actions';
 import { SceneModel } from '@store/scenes.state';
-import { SourceRenderToggle } from '@store/source.actions';
+import { SourceRenderToggle, SourceMuteToggle } from '@store/source.actions';
 import { SourceModel } from '@store/source.state';
 import { Observable, Subject } from 'rxjs';
-import { filter, map, takeUntil } from 'rxjs/operators';
+import { filter, map, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
@@ -79,13 +79,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.connect();
       }
     }
+
     this.sceneGroups.valueChanges
-      .pipe(filter(value => value))
+      .pipe(
+        filter(value => value),
+        tap(data => {
+          if (data.auto) {
+            this.connect();
+          }
+        })
+      )
       .subscribe(data => {
-        console.log(data);
-        if (data.auto) {
-          this.connect();
-        }
         this.store.dispatch(new ScenesSwitch(data.scene));
       });
   }
@@ -108,6 +112,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.store.dispatch(new SourceRenderToggle(source));
   }
 
+  toggleMute(source) {
+    this.store.dispatch(new SourceMuteToggle(source));
+  }
   toggleStreaming() {
     this.store.dispatch(new ObsStreamingToggle());
   }

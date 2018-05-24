@@ -15,12 +15,20 @@ export class TransitionState {
   constructor(private service: ObsService) {}
 
   @Action(TransitionLoad)
-  loadTransitions(ctx: StateContext<TransitionModel[]>, action: TransitionLoad) {
-    this.service.requestCommand({ ...this.service.requestTask('GetTransitionList') });
+  loadTransitions(
+    ctx: StateContext<TransitionModel[]>,
+    action: TransitionLoad
+  ) {
+    this.service.requestCommand({
+      ...this.service.requestTask('GetTransitionList')
+    });
   }
 
   @Action(TransitionChange)
-  changeTransition(ctx: StateContext<TransitionModel[]>, action: TransitionChange) {
+  changeTransition(
+    ctx: StateContext<TransitionModel[]>,
+    action: TransitionChange
+  ) {
     this.service.requestCommand({
       ...this.service.requestTask('SetCurrentTransition'),
       payload: { 'transition-name': action.name }
@@ -31,7 +39,6 @@ export class TransitionState {
 
   @Action(ObsDispatchEvent)
   receiveEvent(ctx: StateContext<TransitionModel[]>, action: ObsDispatchEvent) {
-    console.log(action);
     if (action.payload['update-type']) {
       this.processUpdateEvent(ctx, action);
       return;
@@ -45,7 +52,10 @@ export class TransitionState {
     }
   }
 
-  private processUpdateEvent(ctx: StateContext<TransitionModel[]>, action: ObsDispatchEvent) {
+  private processUpdateEvent(
+    ctx: StateContext<TransitionModel[]>,
+    action: ObsDispatchEvent
+  ) {
     const state = ctx.getState();
     switch (action.payload['update-type']) {
       case 'TransitionListChanged':

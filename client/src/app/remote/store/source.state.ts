@@ -1,7 +1,11 @@
 import { State, StateContext, Action } from '@ngxs/store';
 import { ObsService } from '../services/obs.service';
 import { ObsDispatchEvent } from '@store/obs.actions';
-import { SourceRenderToggle } from '@store/source.actions';
+import {
+  SourceRenderToggle,
+  GetSourceMuteState,
+  SourceMuteToggle
+} from '@store/source.actions';
 import { GetCurrentScene } from '@store/scene.actions';
 
 export interface SourceModel {
@@ -9,6 +13,7 @@ export interface SourceModel {
   render: boolean;
   volume: number;
   type: string;
+  muted?: boolean;
 }
 
 @State<SourceModel[]>({
@@ -18,11 +23,35 @@ export interface SourceModel {
 export class SourcesState {
   constructor(private service: ObsService) {}
 
+  @Action(GetSourceMuteState)
+  getSourceMuteState(
+    ctx: StateContext<SourceModel[]>,
+    action: GetSourceMuteState
+  ) {
+    const requestGetMute = source =>
+      this.service.requestCommand({
+        ...this.service.requestTask('GetMute'),
+        payload: { source: source.name }
+      });
+    ctx.getState().map(requestGetMute.bind(this));
+  }
+
   @Action(SourceRenderToggle)
-  setSourceProperty(ctx: StateContext<SourceModel[]>, action: SourceRenderToggle) {
+  setSourceProperty(
+    ctx: StateContext<SourceModel[]>,
+    action: SourceRenderToggle
+  ) {
     this.service.requestCommand({
       ...this.service.requestTask('SetSceneItemProperties'),
       payload: { item: action.source.name, visible: !action.source.render }
+    });
+  }
+
+  @Action(SourceMuteToggle)
+  toggleSourceMute(ctx: StateContext<SourceModel[]>, action: SourceMuteToggle) {
+    this.service.requestCommand({
+      ...this.service.requestTask('ToggleMute'),
+      payload: { source: action.source.name }
     });
   }
 
@@ -37,22 +66,37 @@ export class SourcesState {
     const state = ctx.getState();
     switch (actionType) {
       case 'GetSceneList':
-        const scene = action.payload.scenes.find(s => s.name === action.payload['current-scene']);
-        if (scene) {
-          ctx.setState([...scene.sources]);
-        }
+        action.payload.scenes
+          .filter(s => s.name === action.payload['current-scene'])
+          .map(scene => ctx.setState([...scene.sources]));
+        ctx.dispatch(new GetSourceMuteState());
         break;
       case 'GetCurrentScene':
         ctx.setState([...action.payload.sources]);
+        ctx.dispatch(new GetSourceMuteState());
+        break;
+      case 'ToggleMute':
+      case 'GetMute':
+        const sources = state.map(source => {
+          if (source.name === action.payload.name) {
+            source.muted = action.payload.muted;
+          }
+          return source;
+        });
+        ctx.setState([...sources]);
         break;
     }
   }
 
-  private processUpdateEvent(ctx: StateContext<SourceModel[]>, action: ObsDispatchEvent) {
+  private processUpdateEvent(
+    ctx: StateContext<SourceModel[]>,
+    action: ObsDispatchEvent
+  ) {
     const state = ctx.getState();
     switch (action.payload['update-type']) {
       case 'SwitchScenes':
         ctx.setState([...action.payload.sources]);
+        ctx.dispatch(new GetSourceMuteState());
         break;
       case 'SceneItemVisibilityChanged':
         const newstate = state.map(x => {
