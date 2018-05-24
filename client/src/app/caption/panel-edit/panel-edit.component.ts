@@ -125,6 +125,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     if (formValue.id) {
       this.store.dispatch(new UpdateCaption(formValue));
     } else {
+      delete formValue.id;
       this.store.dispatch(new AddCaption(formValue));
       this.createCaption();
     }

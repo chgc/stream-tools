@@ -2,11 +2,11 @@
   <div class="row">
     <a routerLink="../" class="btn btn-primary pull-right">返回</a>
     <div class="col-xs-12 col-sm-12 col-md-3">
-      <section>
+      <section>        
         <ul>
           <li class="btn btn-link" (click)="createCaption()">新增</li>
-          <li class="btn btn-block" *ngFor="let caption of items$ | async; trackBy: trackByfn" [ngClass]="caption.colorClass"
-            (click)="setFormGroup(caption)">
+          <li class="btn btn-block" *ngFor="let caption of items$ | async; trackBy: trackByfn" [ngClass]="caption.colorClass" [ngStyle]="caption?.style"
+            (click)="setFormGroup(caption)">            
             {{ caption.label }}
           </li>
         </ul>
