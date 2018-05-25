@@ -1,6 +1,12 @@
 import { ComponentFixture, TestBed, async } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '../../auth.service';
 import { MainComponent } from './main.component';
+import { NgxsModule } from '@ngxs/store';
+import { ObsState } from '@store/obs.state';
+import { ScenesState } from '@store/scenes.state';
+import { TransitionState } from '@store/transition.state';
+import { SourcesState } from '@store/source.state';
 
 describe('MainComponent', () => {
   let component: MainComponent;
@@ -9,12 +15,21 @@ describe('MainComponent', () => {
 
   const fakeAuthServiceSpy = jasmine.createSpyObj('AuthService', ['signOut']);
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [MainComponent],
+      imports: [
+        RouterTestingModule,
+        NgxsModule.forRoot([
+          ObsState,
+          ScenesState,
+          SourcesState,
+          TransitionState
+        ])
+      ],
       providers: [{ provide: AuthService, useValue: fakeAuthServiceSpy }]
-    }).compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(MainComponent);
@@ -28,6 +43,7 @@ describe('MainComponent', () => {
   });
 
   it('should trigger authService signOut', () => {
+    fakeAuthServiceSpy.signOut.and.returnValue(Promise.resolve());
     component.signOut();
     expect(fakeAuthServiceSpy.signOut).toHaveBeenCalled();
   });
