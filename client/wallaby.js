@@ -41,7 +41,10 @@ module.exports = function(wallaby) {
         path.join(wallaby.projectCacheDir, 'src/app'),
         path.join(wallaby.projectCacheDir, 'src'),
         'node_modules'
-      ]
+      ],
+      alias: {
+        '@store': path.join(wallaby.projectCacheDir, 'src/app/remote/store/')
+      }
     },
     node: {
       fs: 'empty',
