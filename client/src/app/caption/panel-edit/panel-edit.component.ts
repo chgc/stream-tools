@@ -91,7 +91,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     try {
       caption = {
         ...caption,
-        style: JSON.stringify(caption.style) || ''
+        style: JSON.stringify(caption.style, null, 2) || ''
       };
     } catch {}
     this.editGroups.reset(caption);
