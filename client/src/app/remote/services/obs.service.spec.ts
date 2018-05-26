@@ -44,7 +44,7 @@ describe('ObsService', () => {
 
   it('should clear task list if there is more than 100 tasks', () => {
     for (let i = 0; i < 51; ++i) {
-      service.requestTask(i);
+      service.requestTask(i.toString());
     }
     expect(service['task'].size).toBe(1);
   });
