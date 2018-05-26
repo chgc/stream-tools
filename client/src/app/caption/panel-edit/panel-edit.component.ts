@@ -10,7 +10,8 @@ import {
 import {
   GetAreaPosition,
   GetCustomCSS,
-  SetUserID
+  SetUserID,
+  SetAreaPosition
 } from '../sotre/environment.action';
 import { AuthService } from '../../auth.service';
 import { ToolsService } from '../services/tools.service';
@@ -44,26 +45,35 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     colorClass: '',
     style: ''
   });
-  destroy$ = new Subject();
-  customCSS = '';
-  areaPosition = {
+
+  areaPositionGroup = this.fb.group({
     MAX_WIDTH: 1620,
     MAX_HEIGHT: 980,
     START_X: 100,
     START_Y: 50
-  };
+  });
+
+  destroy$ = new Subject();
+  stop$ = new Subject();
+  customCSS = '';
 
   constructor(
     private authService: AuthService,
     private store: Store,
     private fb: FormBuilder
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.store.select(state => state.environement).subscribe(caption => {
-      this.areaPosition = caption.areaPosition;
+      this.areaPositionGroup.reset(caption.areaPosition);
       this.customCSS = caption.customCSS;
     });
+
+    this.initAuthAction();
+    this.initAreaEnvironmentFormGroup();
+  }
+
+  initAuthAction() {
 
     const setUserID = userId => {
       this.store.dispatch(new SetUserID(userId));
@@ -83,21 +93,27 @@ export class PanelEditComponent implements OnInit, OnDestroy {
         tap(setUserID),
         map(loadData)
       )
-      .subscribe(() => {});
+      .subscribe();
+  }
+
+  initAreaEnvironmentFormGroup() {
+    this.areaPositionGroup.valueChanges.pipe(
+      debounceTime(500),
+      takeUntil(this.destroy$)).subscribe(value => this.store.dispatch(new SetAreaPosition(value)));
   }
 
   setFormGroup(caption) {
-    this.destroy$.next();
+    this.stop$.next();
     try {
       caption = {
         ...caption,
         style: JSON.stringify(caption.style, null, 2) || ''
       };
-    } catch {}
+    } catch { }
     this.editGroups.reset(caption);
 
     this.editGroups.valueChanges
-      .pipe(takeUntil(this.destroy$), debounceTime(500))
+      .pipe(takeUntil(this.stop$), debounceTime(500))
       .subscribe(formValue => this.save(formValue));
   }
 
@@ -121,7 +137,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
         ...formValue,
         style: JSON.parse(formValue.style || '{}')
       };
-    } catch {}
+    } catch { }
     if (formValue.id) {
       this.store.dispatch(new UpdateCaption(formValue));
     } else {

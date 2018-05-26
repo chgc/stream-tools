@@ -13,7 +13,7 @@ import { CaptionModel } from '../sotre/caption-items.state';
 export class CaptionService {
   myCaptionDocument: AngularFirestoreDocument<any>;
 
-  constructor(private af: AngularFirestore) {}
+  constructor(private af: AngularFirestore) { }
 
   initFireStore(uid) {
     this.myCaptionDocument = this.af.doc(`caption/${uid}`);

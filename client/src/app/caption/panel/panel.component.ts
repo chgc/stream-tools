@@ -67,11 +67,11 @@ export class PanelComponent implements OnInit {
     private authService: AuthService,
     private service: ToolsService,
     private store: Store
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.store.select(state => state.environement).subscribe(caption => {
-      this.areaPosition = caption.areaPosition;
+      this.areaPosition = { ...caption.areaPosition };
       this.customCSS = caption.customCSS;
     });
 
