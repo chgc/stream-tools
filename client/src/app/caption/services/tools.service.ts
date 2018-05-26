@@ -24,12 +24,6 @@ export class ToolsService {
     this.roomName = roomName;
   }
 
-  private registerToServer() {
-    if (this.roomName.length > 0) {
-      this.hubService.invokeCommand('JoinRoom', this.roomName);
-    }
-  }
-
   leaveRoom() {
     if (this.roomName.length > 0) {
       this.hubService.invokeCommand('LeaveRoom', this.roomName);
@@ -37,12 +31,21 @@ export class ToolsService {
   }
 
   addReceiveCommand() {
-    this.hubService.registerMethods('ReceiveCommand', (receivedMessage: string) => {
-      this.message$.next(JSON.parse(receivedMessage));
-    });
+    this.hubService.registerMethods(
+      'ReceiveCommand',
+      (receivedMessage: string) => {
+        this.message$.next(JSON.parse(receivedMessage));
+      }
+    );
   }
 
   sendCommand(command) {
     this.hubService.invokeCommand('SendCommand', this.roomName, command);
+  }
+
+  private registerToServer() {
+    if (this.roomName.length > 0) {
+      this.hubService.invokeCommand('JoinRoom', this.roomName);
+    }
   }
 }

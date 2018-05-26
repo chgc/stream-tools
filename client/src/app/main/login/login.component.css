@@ -1,0 +1,28 @@
+.google {
+  background-color: #dd4b39 !important;
+  color: #ffffff !important;
+}
+.github {
+  background-color: #333333 !important;
+  color: #ffffff !important;
+}
+
+.facebook {
+  background-color: #006699 !important;
+  color: #ffffff !important;
+}
+.fa {
+  font-size: 20px;
+  color: #ffffff;
+  margin-right: 5px;
+}
+
+button {
+  margin-top: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+button i {
+  margin-right: 6px;
+}

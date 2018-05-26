@@ -1,0 +1,53 @@
+<div class="container">
+  <div class="row">
+    <a routerLink="../" class="btn btn-primary pull-right">返回</a>
+    <div class="col-xs-12 col-sm-12 col-md-3">
+      <section>        
+        <ul>
+          <li class="btn btn-link" (click)="createCaption()">新增</li>
+          <li class="btn btn-block" *ngFor="let caption of items$ | async; trackBy: trackByfn" [ngClass]="caption.colorClass" [ngStyle]="caption?.style"
+            (click)="setFormGroup(caption)">            
+            {{ caption.label }}
+          </li>
+        </ul>
+      </section>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-9">
+      <div *ngIf="editGroups">
+        <form [formGroup]="editGroups">
+          <div class="form-group">
+            <label for="label">按鈕文字</label>
+            <input type="text" class="form-control" id="label" placeholder="按鈕文字" formControlName="label">
+            <div *ngIf="editGroups.get('label').invalid && (editGroups.get('label').dirty || editGroups.get('label').touched)"
+              class="alert alert-danger">
+              <div *ngIf="editGroups.get('label').hasError('required')">
+                按鈕文字為必填資訊
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="value">顯示文字</label>
+            <input type="text" class="form-control" id="value" placeholder="顯示文字" formControlName="value">
+            <div *ngIf="editGroups.get('value').invalid && (editGroups.get('value').dirty || editGroups.get('value').touched)"
+              class="alert alert-danger">
+              <div *ngIf="editGroups.get('value').hasError('required')">
+                顯示文字為必填資訊
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="colorClass">按鈕顏色</label>
+            <input type="text" class="form-control" id="label" placeholder="按鈕顏色" formControlName="colorClass">
+          </div>
+          <div class="form-group">
+            <label for="style">自訂 CSS Style</label>
+            <ace-editor formControlName="style" theme="github" mode="json" style="min-height: 200px; width:100%; overflow: auto;">
+            </ace-editor>
+          </div>
+          <button type="button" class="btn btn-default" *ngIf="!editGroups.get('id').value" (click)="save()">新增</button>
+          <button type="button" class="btn btn-danger pull-right" *ngIf="editGroups.get('id').value" (click)="remove()">移除</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

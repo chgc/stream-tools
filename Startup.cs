@@ -39,6 +39,7 @@ namespace stream_tools
             app.UseSignalR(routes =>
                        {
                            routes.MapHub<ActionHub>("/actionHub");
+                           routes.MapHub<SimpleHub>("/simpleHub");
                        });
 
             app.Use(async (context, next) =>

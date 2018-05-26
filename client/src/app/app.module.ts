@@ -3,14 +3,32 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Route, RouterModule } from '@angular/router';
+import { NgxsModule } from '@ngxs/store';
 import { AngularFireModule } from 'angularfire2';
-import { AppComponent } from './app.component';
+import { AngularFireAuthModule } from 'angularfire2/auth';
+import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { environment } from '../environments/environment';
+import { AppComponent } from './app.component';
+import { AuthGuard } from './auth.guard';
+import { LoginComponent } from './main/login/login.component';
+import { MainModule } from './main/main.module';
+import { MainComponent } from './main/main/main.component';
 
 const routes: Route[] = [
-  { path: 'caption', loadChildren: './caption/caption.module#CaptionModule' },
-  { path: 'remote', loadChildren: './remote/remote.module#RemoteModule' },
-  { path: '**', redirectTo: '/remote', pathMatch: 'full' }
+  { path: 'login', component: LoginComponent },
+  {
+    path: 'main',
+    canActivateChild: [AuthGuard],
+    component: MainComponent,
+    children: [
+      {
+        path: 'caption',
+        loadChildren: './caption/caption.module#CaptionModule'
+      },
+      { path: 'remote', loadChildren: './remote/remote.module#RemoteModule' }
+    ]
+  },
+  { path: '**', redirectTo: '/main/remote', pathMatch: 'full' }
 ];
 
 @NgModule({
@@ -20,7 +38,11 @@ const routes: Route[] = [
     BrowserAnimationsModule,
     FormsModule,
     RouterModule.forRoot(routes),
-    AngularFireModule.initializeApp(environment.firebase)
+    AngularFireModule.initializeApp(environment.firebase),
+    NgxsModule.forRoot([]),
+    AngularFireAuthModule,
+    AngularFirestoreModule,
+    MainModule
   ],
   providers: [],
   bootstrap: [AppComponent]
