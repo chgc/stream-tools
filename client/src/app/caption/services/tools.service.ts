@@ -9,7 +9,7 @@ import { CommandModel } from './command.interface';
 export class ToolsService {
   message$ = new Subject<CommandModel>();
   private roomName = '';
-  constructor(private hubService: HubService) {}
+  constructor(private hubService: HubService) { }
 
   init() {
     this.addReceiveCommand();
@@ -41,6 +41,13 @@ export class ToolsService {
 
   sendCommand(command) {
     this.hubService.invokeCommand('SendCommand', this.roomName, command);
+  }
+
+  injectStyle(cssSylte) {
+    const script = document.createElement('style');
+    script.type = 'text/css'
+    script.appendChild(document.createTextNode(cssSylte));
+    document.body.appendChild(script);
   }
 
   private registerToServer() {
