@@ -143,6 +143,7 @@ describe('panelComponent', () => {
           {
             label: '斗內時間',
             value: '斗內時間',
+            displayClass: 'btn-danger',
             colorClass: 'btn-danger',
             style: {}
           }

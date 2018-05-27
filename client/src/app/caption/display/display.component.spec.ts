@@ -16,35 +16,39 @@ import { NgxsModule, Store } from '@ngxs/store';
 import { EnvironmentState } from '../sotre/environment.state';
 import { CaptionItemsState } from '../sotre/caption-items.state';
 import { AngularFirestore } from 'angularfire2/firestore';
+import { GetCustomCSS } from '../sotre/environment.action';
 
 fdescribe('DisplayComponent', () => {
   let component: DisplayComponent;
   let fixture: ComponentFixture<DisplayComponent>;
+  let service: ToolsService;
 
   const toolsServiceSpy = {
-    joinRoom: id => { },
-    init: () => { },
-    leaveRoom: () => { },
+    joinRoom: id => {},
+    init: () => {},
+    leaveRoom: () => {},
     message$: new Subject(),
-    injectStyle: (value) => { }
+    injectStyle: value => {}
   };
 
   const activedRouteSpy = {
     paramMap: of(new Map<string, string>())
   } as any;
 
-  const FakeAngularFirestore = jasmine.createSpyObj('AngularFirestore', ['doc', 'createId']);
-
+  const mockCustomCSS = '.h1 {}';
+  const storeSpy = {
+    select: state => of({ customCSS: mockCustomCSS }),
+    dispatch: action => {}
+  } as any;
   let store;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [DisplayComponent],
-      imports: [NgxsModule.forRoot([EnvironmentState, CaptionItemsState])],
       providers: [
         { provide: ToolsService, useValue: toolsServiceSpy },
         { provide: ActivatedRoute, useValue: activedRouteSpy },
-        { provide: AngularFirestore, useValue: FakeAngularFirestore }
+        { provide: Store, useValue: storeSpy }
       ]
     }).compileComponents();
   }));
@@ -53,11 +57,19 @@ fdescribe('DisplayComponent', () => {
     fixture = TestBed.createComponent(DisplayComponent);
     component = fixture.componentInstance;
     store = TestBed.get(Store);
+    service = TestBed.get(ToolsService);
+
     fixture.detectChanges();
   });
 
   it('should create displayComponent', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should call injectStyle', () => {
+    spyOn(service, 'injectStyle');
+    component.injectStyle();
+    expect(service.injectStyle).toHaveBeenCalledWith(mockCustomCSS);
   });
 
   it('should add to meesages', () => {

@@ -1,7 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subject, of } from 'rxjs';
-import { delay, mergeMap, takeUntil, tap, map, take, filter, distinctUntilChanged } from 'rxjs/operators';
+import {
+  delay,
+  mergeMap,
+  takeUntil,
+  tap,
+  map,
+  take,
+  filter,
+  distinctUntilChanged
+} from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { CommandModel } from '../services/command.interface';
 import { ToolsService } from '../services/tools.service';
@@ -23,9 +32,11 @@ export class DisplayComponent implements OnInit, OnDestroy {
   );
   destroy$ = new Subject();
 
-  constructor(private service: ToolsService, private route: ActivatedRoute, private store: Store) {
-    this.store.select(state => state.environement).pipe(filter(env => env.customCSS), map(env => env.customCSS), distinctUntilChanged()).subscribe(customCSS => this.service.injectStyle(customCSS));
-
+  constructor(
+    private service: ToolsService,
+    private route: ActivatedRoute,
+    private store: Store
+  ) {
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(param => {
       this.service.joinRoom(param.get('room'));
       this.store.dispatch(new SetUserID(param.get('room')));
@@ -33,9 +44,8 @@ export class DisplayComponent implements OnInit, OnDestroy {
     });
   }
 
-
-
   ngOnInit() {
+    this.injectStyle();
     this.service.init();
     this.tasks$.pipe(mergeMap(task => task)).subscribe();
     this.message$
@@ -45,6 +55,16 @@ export class DisplayComponent implements OnInit, OnDestroy {
       });
   }
 
+  injectStyle() {
+    this.store
+      .select(state => state.environement)
+      .pipe(
+        filter(env => env.customCSS),
+        map(env => env.customCSS),
+        distinctUntilChanged()
+      )
+      .subscribe(customCSS => this.service.injectStyle(customCSS));
+  }
   ngOnDestroy() {
     this.service.leaveRoom();
     this.destroy$.next();
