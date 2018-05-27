@@ -83,23 +83,19 @@ export class PanelEditComponent implements OnInit, OnDestroy {
   }
 
   resetValue() {
-    this.store
-      .select(state => state.environement)
-      .pipe(
-        takeUntil(this.destroy$),
-        filter(env => env.areaPosition),
-        map(env => env.areaPosition),
-        distinctUntilChanged()
-      )
-      .subscribe(areaPosition => {
-        this.areaPositionGroup.reset(areaPosition, { emitEvent: false });
-      });
-    this.store
-      .select(state => state.environement)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(caption => {
-        this.customCSSGroup.patchValue({ customCSS: caption.customCSS });
-      });
+    this.store.selectOnce(state => state.environement).subscribe(env => {
+      if (env.areaPosition) {
+        this.areaPositionGroup.reset(env.areaPosition, {
+          emitEvent: false
+        });
+      }
+      if (env.customCSS) {
+        this.customCSSGroup.reset(
+          { customCSS: env.customCSS },
+          { emitEvent: false }
+        );
+      }
+    });
   }
 
   initAreaEnvironmentFormGroup() {
@@ -110,7 +106,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
 
   initCustomCSSGroup() {
     this.customCSSGroup.valueChanges
-      .pipe(debounceTime(500), takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$), debounceTime(500))
       .subscribe(value =>
         this.store.dispatch(new SetCustomCSS(value.customCSS))
       );
@@ -174,6 +170,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
 
   setTab(tab) {
     this.currentTab = tab;
+    this.resetValue();
   }
   ngOnDestroy() {
     this.destroy$.next();

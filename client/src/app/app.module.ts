@@ -32,6 +32,11 @@ const routes: Route[] = [
   { path: '**', redirectTo: '/main/remote', pathMatch: 'full' }
 ];
 
+const extraImports = [];
+if (!environment.production) {
+  extraImports.push(NgxsReduxDevtoolsPluginModule.forRoot());
+}
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -41,10 +46,10 @@ const routes: Route[] = [
     RouterModule.forRoot(routes),
     AngularFireModule.initializeApp(environment.firebase),
     NgxsModule.forRoot([]),
-    NgxsReduxDevtoolsPluginModule.forRoot(),
     AngularFireAuthModule,
     AngularFirestoreModule,
-    MainModule
+    MainModule,
+    ...extraImports
   ],
   providers: [],
   bootstrap: [AppComponent]
