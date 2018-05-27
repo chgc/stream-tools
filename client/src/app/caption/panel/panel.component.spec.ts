@@ -66,7 +66,7 @@ describe('panelComponent', () => {
 
   it('should send a message', () => {
     spyOn(component, 'buildCommand').and.returnValue({});
-    component.sendMessage('');
+    component.sendMessage('', '');
     expect(fakeToolsService.sendCommand).toHaveBeenCalled();
   });
 
@@ -84,14 +84,14 @@ describe('panelComponent', () => {
     const outputValue = {
       command: 'message',
       message: inputValue,
-      className: `fz1`,
+      className: `fz1 `,
       style: {
         left: `0px`,
         top: `0px`,
         transform: `rotate(-45deg)`
       }
     };
-    expect(component.buildCommand(inputValue)).toEqual(outputValue);
+    expect(component.buildCommand(inputValue, '')).toEqual(outputValue);
   });
 
   it('should return number', () => {
@@ -167,7 +167,7 @@ describe('panelComponent', () => {
       const btn = elements.querySelector('button');
       btn.click();
       expect(component.sendMessage).toHaveBeenCalled();
-      expect(component.sendMessage).toHaveBeenCalledWith('斗內時間');
+      expect(component.sendMessage).toHaveBeenCalledWith('斗內時間', 'btn-danger');
     });
   });
 });

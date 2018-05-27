@@ -19,8 +19,8 @@
 
       <!-- 罐頭訊息 -->
       <div class="grid" *ngIf="items$ | async as items; else loading">
-        <button class="btn btn-lg" *ngFor="let item of items" [ngClass]="item.colorClass" (click)="sendMessage(item.value)"
-          [ngStyle]="item.style">
+        <button class="btn btn-lg" *ngFor="let item of items" [ngClass]="item.colorClass"
+          (click)="sendMessage(item.value, item.colorClass)" [ngStyle]="item.style">
           {{ item.label }}
         </button>
       </div>

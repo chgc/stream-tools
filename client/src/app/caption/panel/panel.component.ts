@@ -101,15 +101,15 @@ export class PanelComponent implements OnInit {
       .subscribe();
   }
 
-  sendMessage(value) {
-    this.service.sendCommand(this.buildCommand(value));
+  sendMessage(value, colorClass) {
+    this.service.sendCommand(this.buildCommand(value, colorClass));
   }
 
-  buildCommand(value) {
+  buildCommand(value, colorClass) {
     return <CommandModel>{
       command: 'message',
       message: value,
-      className: `fz${this.getRandomNumber(1, 5)}`,
+      className: `fz${this.getRandomNumber(1, 5)} ${colorClass}`,
       style: {
         left: `${this.getRandomNumber(
           this.areaPosition.START_X,

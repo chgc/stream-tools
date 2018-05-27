@@ -50,14 +50,18 @@ export class PanelEditComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.store.selectOnce(state => state.environement).subscribe(caption => {
-      this.areaPositionGroup.reset(caption.areaPosition);
-      this.customCSSGroup.reset({ customCSS: caption.customCSS });
-    });
+
 
     this.initAuthAction();
     this.initAreaEnvironmentFormGroup();
     this.initCustomCSSGroup();
+  }
+
+  resetValue() {
+    this.store.selectOnce(state => state.environement).subscribe(caption => {
+      this.areaPositionGroup.reset(caption.areaPosition, { emitEvent: false });
+      this.customCSSGroup.patchValue({ customCSS: caption.customCSS });
+    });
   }
 
   initAuthAction() {
@@ -85,7 +89,6 @@ export class PanelEditComponent implements OnInit, OnDestroy {
 
   initAreaEnvironmentFormGroup() {
     this.areaPositionGroup.valueChanges.pipe(
-      debounceTime(500),
       takeUntil(this.destroy$)).subscribe(value => this.store.dispatch(new SetAreaPosition(value)));
   }
 
@@ -150,6 +153,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
 
   setTab(tab) {
     this.currentTab = tab;
+    this.resetValue();
   }
   ngOnDestroy() {
     this.destroy$.next();
