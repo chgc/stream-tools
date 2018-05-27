@@ -48,13 +48,6 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     style: ''
   });
 
-  defaultPosition = {
-    MAX_WIDTH: 1620,
-    MAX_HEIGHT: 980,
-    START_X: 100,
-    START_Y: 50
-  };
-
   areaPositionGroup = this.fb.group({
     MAX_WIDTH: [],
     MAX_HEIGHT: [],

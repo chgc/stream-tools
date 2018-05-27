@@ -55,7 +55,7 @@ export class EnvironmentState {
   ) {
     const currentState = ctx.getState();
     const updateAreaPositionState = areaPosition =>
-      ctx.patchState({ areaPosition });
+      ctx.setState({ ...currentState, areaPosition });
 
     return this.captionService
       .getAreaPosition()
@@ -75,7 +75,8 @@ export class EnvironmentState {
   @Action(GetCustomCSS)
   getCustomCSS(ctx: StateContext<CaptionPanelModel>, action: GetCustomCSS) {
     const currentState = ctx.getState();
-    const updateCustomCSSState = customCSS => ctx.patchState({ customCSS });
+    const updateCustomCSSState = customCSS =>
+      ctx.setState({ ...currentState, customCSS });
     return this.captionService.getCustomCSS().pipe(tap(updateCustomCSSState));
   }
 
