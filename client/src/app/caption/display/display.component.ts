@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subject, of } from 'rxjs';
-import { delay, mergeMap, takeUntil, tap } from 'rxjs/operators';
+import { delay, mergeMap, takeUntil, tap, map, take, filter, distinctUntilChanged } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { CommandModel } from '../services/command.interface';
 import { ToolsService } from '../services/tools.service';
 import { Store } from '@ngxs/store';
+import { GetCustomCSS, SetUserID } from '../sotre/environment.action';
 
 @Component({
   selector: 'app-display',
@@ -23,11 +24,16 @@ export class DisplayComponent implements OnInit, OnDestroy {
   destroy$ = new Subject();
 
   constructor(private service: ToolsService, private route: ActivatedRoute, private store: Store) {
-    this.store.selectOnce(state => state.customCSS).subscribe(value => this.service.injectStyle(value));
+    this.store.select(state => state.environement).pipe(filter(env => env.customCSS), map(env => env.customCSS), distinctUntilChanged()).subscribe(customCSS => this.service.injectStyle(customCSS));
+
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(param => {
       this.service.joinRoom(param.get('room'));
+      this.store.dispatch(new SetUserID(param.get('room')));
+      this.store.dispatch(new GetCustomCSS());
     });
   }
+
+
 
   ngOnInit() {
     this.service.init();
