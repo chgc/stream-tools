@@ -12,15 +12,15 @@
       <!-- 表單區 -->
       <form>
         <div class="form-group form-group-lg">
-          <input type="text" placeholder="請輸入您想吐槽的字，按Enter送出" class="form-control" (keyup.enter)="sendMessage(msg.value); msg.value=''"
+          <input type="text" placeholder="請輸入您想吐槽的字，按Enter送出" class="form-control" (keyup.enter)="sendMessage(msg.value, ''); msg.value=''"
             #msg>
         </div>
       </form>
 
       <!-- 罐頭訊息 -->
       <div class="grid" *ngIf="items$ | async as items; else loading">
-        <button class="btn btn-lg" *ngFor="let item of items" [ngClass]="item.colorClass"
-          (click)="sendMessage(item.value, item.displayClass)" [ngStyle]="item.style">
+        <button class="btn btn-lg" *ngFor="let item of items" [ngClass]="item.colorClass" (click)="sendMessage(item.value, item.displayClass)"
+          [ngStyle]="item.style">
           {{ item.label }}
         </button>
       </div>
