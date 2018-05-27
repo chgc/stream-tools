@@ -8,8 +8,19 @@ import 'brace/theme/github';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, filter, map, takeUntil, tap } from 'rxjs/operators';
 import { AuthService } from '../../auth.service';
-import { AddCaption, GetCaptionList, RemoveCaption, UpdateCaption } from '../sotre/caption-items.action';
-import { GetAreaPosition, GetCustomCSS, SetAreaPosition, SetCustomCSS, SetUserID } from '../sotre/environment.action';
+import {
+  AddCaption,
+  GetCaptionList,
+  RemoveCaption,
+  UpdateCaption
+} from '../sotre/caption-items.action';
+import {
+  GetAreaPosition,
+  GetCustomCSS,
+  SetAreaPosition,
+  SetCustomCSS,
+  SetUserID
+} from '../sotre/environment.action';
 declare var ace: any;
 
 @Component({
@@ -24,7 +35,8 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     id: '',
     label: ['', [Validators.required]],
     value: ['', [Validators.required]],
-    colorClass: '',
+    displayClass: '',
+    colorClass: 'btn-primary',
     style: ''
   });
 
@@ -37,7 +49,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
 
   customCSSGroup = this.fb.group({
     customCSS: ''
-  })
+  });
 
   destroy$ = new Subject();
   stop$ = new Subject();
@@ -47,11 +59,9 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private store: Store,
     private fb: FormBuilder
-  ) { }
+  ) {}
 
   ngOnInit() {
-
-
     this.initAuthAction();
     this.initAreaEnvironmentFormGroup();
     this.initCustomCSSGroup();
@@ -65,7 +75,6 @@ export class PanelEditComponent implements OnInit, OnDestroy {
   }
 
   initAuthAction() {
-
     const setUserID = userId => {
       this.store.dispatch(new SetUserID(userId));
     };
@@ -88,12 +97,17 @@ export class PanelEditComponent implements OnInit, OnDestroy {
   }
 
   initAreaEnvironmentFormGroup() {
-    this.areaPositionGroup.valueChanges.pipe(
-      takeUntil(this.destroy$)).subscribe(value => this.store.dispatch(new SetAreaPosition(value)));
+    this.areaPositionGroup.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(value => this.store.dispatch(new SetAreaPosition(value)));
   }
 
   initCustomCSSGroup() {
-    this.customCSSGroup.valueChanges.pipe(debounceTime(500), takeUntil(this.destroy$)).subscribe(value => this.store.dispatch(new SetCustomCSS(value.customCSS)));
+    this.customCSSGroup.valueChanges
+      .pipe(debounceTime(500), takeUntil(this.destroy$))
+      .subscribe(value =>
+        this.store.dispatch(new SetCustomCSS(value.customCSS))
+      );
   }
 
   setFormGroup(caption) {
@@ -103,7 +117,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
         ...caption,
         style: JSON.stringify(caption.style, null, 2) || ''
       };
-    } catch { }
+    } catch {}
     this.editGroups.reset(caption);
 
     this.editGroups.valueChanges
@@ -116,6 +130,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
       id: '',
       label: '',
       value: '',
+      displayClass: '',
       colorClass: 'btn-primary',
       style: ''
     });
@@ -131,7 +146,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
         ...formValue,
         style: JSON.parse(formValue.style || '{}')
       };
-    } catch { }
+    } catch {}
     if (formValue.id) {
       this.store.dispatch(new UpdateCaption(formValue));
     } else {

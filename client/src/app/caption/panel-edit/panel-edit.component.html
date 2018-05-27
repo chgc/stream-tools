@@ -55,17 +55,9 @@
       <div *ngIf="editGroups">
         <form [formGroup]="editGroups">
           <div class="form-group">
-            <label for="label">按鈕文字</label>
-            <input type="text" class="form-control" id="label" placeholder="按鈕文字" formControlName="label">
-            <div *ngIf="editGroups.get('label').invalid && (editGroups.get('label').dirty || editGroups.get('label').touched)"
-              class="alert alert-danger">
-              <div *ngIf="editGroups.get('label').hasError('required')">
-                按鈕文字為必填資訊
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="value">顯示文字</label>
+            <label for="value">顯示文字
+              <span class="text-danger">*</span>
+            </label>
             <input type="text" class="form-control" id="value" placeholder="顯示文字" formControlName="value">
             <div *ngIf="editGroups.get('value').invalid && (editGroups.get('value').dirty || editGroups.get('value').touched)"
               class="alert alert-danger">
@@ -75,7 +67,23 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="colorClass">按鈕樣式/顯示文字樣式 (可使用自訂全域 CSS 樣式)</label>
+            <label for="colorClass">顯示文字樣式 (可使用自訂全域 CSS 樣式)</label>
+            <input type="text" class="form-control" id="label" placeholder="按鈕顏色" formControlName="displayClass">
+          </div>
+          <div class="form-group">
+            <label for="label">按鈕文字
+              <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="form-control" id="label" placeholder="按鈕文字" formControlName="label">
+            <div *ngIf="editGroups.get('label').invalid && (editGroups.get('label').dirty || editGroups.get('label').touched)"
+              class="alert alert-danger">
+              <div *ngIf="editGroups.get('label').hasError('required')">
+                按鈕文字為必填資訊
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="colorClass">按鈕樣式</label>
             <input type="text" class="form-control" id="label" placeholder="按鈕顏色" formControlName="colorClass">
           </div>
           <div class="form-group">
