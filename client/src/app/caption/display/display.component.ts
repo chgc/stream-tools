@@ -5,6 +5,7 @@ import { delay, mergeMap, takeUntil, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { CommandModel } from '../services/command.interface';
 import { ToolsService } from '../services/tools.service';
+import { Store } from '@ngxs/store';
 
 @Component({
   selector: 'app-display',
@@ -21,7 +22,8 @@ export class DisplayComponent implements OnInit, OnDestroy {
   );
   destroy$ = new Subject();
 
-  constructor(private service: ToolsService, private route: ActivatedRoute) {
+  constructor(private service: ToolsService, private route: ActivatedRoute, private store: Store) {
+    this.store.selectOnce(state => state.customCSS).subscribe(value => this.service.injectStyle(value));
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(param => {
       this.service.joinRoom(param.get('room'));
     });

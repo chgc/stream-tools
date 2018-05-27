@@ -100,6 +100,7 @@ export class PanelComponent implements OnInit {
       )
       .subscribe();
   }
+
   sendMessage(value) {
     this.service.sendCommand(this.buildCommand(value));
   }
