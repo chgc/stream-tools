@@ -1,33 +1,15 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Store, Select } from '@ngxs/store';
-import { Observable, Subject } from 'rxjs';
-import {
-  GetCaptionList,
-  UpdateCaption,
-  AddCaption,
-  RemoveCaption
-} from '../sotre/caption-items.action';
-import {
-  GetAreaPosition,
-  GetCustomCSS,
-  SetUserID,
-  SetAreaPosition
-} from '../sotre/environment.action';
-import { AuthService } from '../../auth.service';
-import { ToolsService } from '../services/tools.service';
-import {
-  filter,
-  map,
-  tap,
-  mergeMap,
-  takeUntil,
-  debounceTime,
-  distinctUntilChanged
-} from 'rxjs/operators';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Select, Store } from '@ngxs/store';
 import 'brace';
-import 'brace/theme/github';
+import 'brace/mode/css';
 import 'brace/mode/json';
+import 'brace/theme/github';
+import { Observable, Subject } from 'rxjs';
+import { debounceTime, filter, map, takeUntil, tap } from 'rxjs/operators';
+import { AuthService } from '../../auth.service';
+import { AddCaption, GetCaptionList, RemoveCaption, UpdateCaption } from '../sotre/caption-items.action';
+import { GetAreaPosition, GetCustomCSS, SetAreaPosition, SetCustomCSS, SetUserID } from '../sotre/environment.action';
 declare var ace: any;
 
 @Component({
@@ -53,9 +35,13 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     START_Y: 50
   });
 
+  customCSSGroup = this.fb.group({
+    customCSS: ''
+  })
+
   destroy$ = new Subject();
   stop$ = new Subject();
-  customCSS = '';
+  currentTab = 'caption';
 
   constructor(
     private authService: AuthService,
@@ -64,13 +50,14 @@ export class PanelEditComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.store.select(state => state.environement).subscribe(caption => {
+    this.store.selectOnce(state => state.environement).subscribe(caption => {
       this.areaPositionGroup.reset(caption.areaPosition);
-      this.customCSS = caption.customCSS;
+      this.customCSSGroup.reset({ customCSS: caption.customCSS });
     });
 
     this.initAuthAction();
     this.initAreaEnvironmentFormGroup();
+    this.initCustomCSSGroup();
   }
 
   initAuthAction() {
@@ -100,6 +87,10 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     this.areaPositionGroup.valueChanges.pipe(
       debounceTime(500),
       takeUntil(this.destroy$)).subscribe(value => this.store.dispatch(new SetAreaPosition(value)));
+  }
+
+  initCustomCSSGroup() {
+    this.customCSSGroup.valueChanges.pipe(debounceTime(500), takeUntil(this.destroy$)).subscribe(value => this.store.dispatch(new SetCustomCSS(value.customCSS)));
   }
 
   setFormGroup(caption) {
@@ -157,6 +148,9 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     return item.id;
   }
 
+  setTab(tab) {
+    this.currentTab = tab;
+  }
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();

@@ -1,5 +1,13 @@
 <div class="container">
-  <div class="row">
+  <ul class="nav nav-tabs">
+    <li role="presentation" class="active" [ngClass]="{active: currentTab === 'caption'}">
+      <a (click)="setTab('caption')">彈幕維護</a>
+    </li>
+    <li role="presentation" [ngClass]="{active: currentTab === 'basic'}">
+      <a (click)="setTab('basic')">其他參數</a>
+    </li>
+  </ul>
+  <div class="row" *ngIf="currentTab === 'basic'">
     <div class="col-xs-12 col-sm-12 col-md-12">
       <h3>顯示邊界設定</h3>
       <form [formGroup]="areaPositionGroup" class="form-inline">
@@ -21,8 +29,15 @@
         </div>
       </form>
     </div>
+    <div class="col-xs-12 col-sm-12 col-md-12">
+      <h3>全域 CSS 樣式</h3>
+      <form [formGroup]="customCSSGroup">
+        <ace-editor formControlName="customCSS" theme="github" mode="css" style="min-height: 200px; width:100%; overflow: auto;">
+        </ace-editor>
+      </form>
+    </div>
   </div>
-  <div class="row">
+  <div class="row" *ngIf="currentTab === 'caption'">
     <a routerLink="../" class="btn btn-primary pull-right">返回</a>
     <div class="col-xs-12 col-sm-12 col-md-3">
       <section *ngIf="items$ | async as items">

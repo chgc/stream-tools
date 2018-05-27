@@ -44,8 +44,13 @@ export class ToolsService {
   }
 
   injectStyle(cssSylte) {
+    const customStyleDOM = document.querySelector('style[title="custom"]');
+    if (customStyleDOM) {
+      customStyleDOM.remove();
+    }
     const script = document.createElement('style');
-    script.type = 'text/css'
+    script.type = 'text/css';
+    script.title = 'custom';
     script.appendChild(document.createTextNode(cssSylte));
     document.body.appendChild(script);
   }
