@@ -23,10 +23,10 @@ export interface CaptionPanelModel {
     displayUrl: '',
     customCSS: '',
     areaPosition: {
-      MAX_WIDTH: 1620,
-      MAX_HEIGHT: 980,
-      START_X: 100,
-      START_Y: 50
+      MAX_WIDTH: 0,
+      MAX_HEIGHT: 0,
+      START_X: 0,
+      START_Y: 0
     }
   }
 })
@@ -55,7 +55,7 @@ export class EnvironmentState {
   ) {
     const currentState = ctx.getState();
     const updateAreaPositionState = areaPosition =>
-      ctx.setState({ ...currentState, areaPosition });
+      ctx.patchState({ areaPosition });
 
     return this.captionService
       .getAreaPosition()
@@ -75,8 +75,7 @@ export class EnvironmentState {
   @Action(GetCustomCSS)
   getCustomCSS(ctx: StateContext<CaptionPanelModel>, action: GetCustomCSS) {
     const currentState = ctx.getState();
-    const updateCustomCSSState = customCSS =>
-      ctx.setState({ ...currentState, customCSS });
+    const updateCustomCSSState = customCSS => ctx.patchState({ customCSS });
     return this.captionService.getCustomCSS().pipe(tap(updateCustomCSSState));
   }
 

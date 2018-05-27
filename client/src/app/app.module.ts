@@ -13,6 +13,7 @@ import { AuthGuard } from './auth.guard';
 import { LoginComponent } from './main/login/login.component';
 import { MainModule } from './main/main.module';
 import { MainComponent } from './main/main/main.component';
+import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 
 const routes: Route[] = [
   { path: 'login', component: LoginComponent },
@@ -40,6 +41,7 @@ const routes: Route[] = [
     RouterModule.forRoot(routes),
     AngularFireModule.initializeApp(environment.firebase),
     NgxsModule.forRoot([]),
+    NgxsReduxDevtoolsPluginModule.forRoot(),
     AngularFireAuthModule,
     AngularFirestoreModule,
     MainModule

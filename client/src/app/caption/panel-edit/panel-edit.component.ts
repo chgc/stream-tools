@@ -6,7 +6,14 @@ import 'brace/mode/css';
 import 'brace/mode/json';
 import 'brace/theme/github';
 import { Observable, Subject } from 'rxjs';
-import { debounceTime, filter, map, takeUntil, tap } from 'rxjs/operators';
+import {
+  debounceTime,
+  filter,
+  map,
+  takeUntil,
+  tap,
+  distinctUntilChanged
+} from 'rxjs/operators';
 import { AuthService } from '../../auth.service';
 import {
   AddCaption,
@@ -31,6 +38,7 @@ declare var ace: any;
 export class PanelEditComponent implements OnInit, OnDestroy {
   @Select(state => state.captions)
   items$: Observable<any>;
+
   editGroups: FormGroup = this.fb.group({
     id: '',
     label: ['', [Validators.required]],
@@ -40,11 +48,18 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     style: ''
   });
 
-  areaPositionGroup = this.fb.group({
+  defaultPosition = {
     MAX_WIDTH: 1620,
     MAX_HEIGHT: 980,
     START_X: 100,
     START_Y: 50
+  };
+
+  areaPositionGroup = this.fb.group({
+    MAX_WIDTH: [],
+    MAX_HEIGHT: [],
+    START_X: [],
+    START_Y: []
   });
 
   customCSSGroup = this.fb.group({
@@ -62,38 +77,29 @@ export class PanelEditComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.initAuthAction();
+    this.resetValue();
     this.initAreaEnvironmentFormGroup();
     this.initCustomCSSGroup();
   }
 
   resetValue() {
-    this.store.selectOnce(state => state.environement).subscribe(caption => {
-      this.areaPositionGroup.reset(caption.areaPosition, { emitEvent: false });
-      this.customCSSGroup.patchValue({ customCSS: caption.customCSS });
-    });
-  }
-
-  initAuthAction() {
-    const setUserID = userId => {
-      this.store.dispatch(new SetUserID(userId));
-    };
-
-    const loadData = userId =>
-      this.store.dispatch([
-        new GetCaptionList(),
-        new GetAreaPosition(),
-        new GetCustomCSS()
-      ]);
-
-    this.authService.authState
+    this.store
+      .select(state => state.environement)
       .pipe(
-        filter(user => !!user),
-        map(user => user.uid),
-        tap(setUserID),
-        map(loadData)
+        takeUntil(this.destroy$),
+        filter(env => env.areaPosition),
+        map(env => env.areaPosition),
+        distinctUntilChanged()
       )
-      .subscribe();
+      .subscribe(areaPosition => {
+        this.areaPositionGroup.reset(areaPosition, { emitEvent: false });
+      });
+    this.store
+      .select(state => state.environement)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(caption => {
+        this.customCSSGroup.patchValue({ customCSS: caption.customCSS });
+      });
   }
 
   initAreaEnvironmentFormGroup() {
@@ -168,7 +174,6 @@ export class PanelEditComponent implements OnInit, OnDestroy {
 
   setTab(tab) {
     this.currentTab = tab;
-    this.resetValue();
   }
   ngOnDestroy() {
     this.destroy$.next();
