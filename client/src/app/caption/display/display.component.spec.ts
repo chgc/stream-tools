@@ -12,28 +12,39 @@ import { DisplayComponent } from './display.component';
 import { ToolsService } from '../services/tools.service';
 import { ActivatedRoute } from '@angular/router';
 import { delay, tap, debounceTime } from 'rxjs/operators';
+import { NgxsModule, Store } from '@ngxs/store';
+import { EnvironmentState } from '../sotre/environment.state';
+import { CaptionItemsState } from '../sotre/caption-items.state';
+import { AngularFirestore } from 'angularfire2/firestore';
 
 fdescribe('DisplayComponent', () => {
   let component: DisplayComponent;
   let fixture: ComponentFixture<DisplayComponent>;
 
   const toolsServiceSpy = {
-    joinRoom: id => {},
-    init: () => {},
-    leaveRoom: () => {},
-    message$: new Subject()
+    joinRoom: id => { },
+    init: () => { },
+    leaveRoom: () => { },
+    message$: new Subject(),
+    injectStyle: (value) => { }
   };
 
   const activedRouteSpy = {
     paramMap: of(new Map<string, string>())
   } as any;
 
+  const FakeAngularFirestore = jasmine.createSpyObj('AngularFirestore', ['doc', 'createId']);
+
+  let store;
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [DisplayComponent],
+      imports: [NgxsModule.forRoot([EnvironmentState, CaptionItemsState])],
       providers: [
         { provide: ToolsService, useValue: toolsServiceSpy },
-        { provide: ActivatedRoute, useValue: activedRouteSpy }
+        { provide: ActivatedRoute, useValue: activedRouteSpy },
+        { provide: AngularFirestore, useValue: FakeAngularFirestore }
       ]
     }).compileComponents();
   }));
@@ -41,6 +52,7 @@ fdescribe('DisplayComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DisplayComponent);
     component = fixture.componentInstance;
+    store = TestBed.get(Store);
     fixture.detectChanges();
   });
 
