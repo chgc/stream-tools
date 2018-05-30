@@ -9,10 +9,11 @@ import { PanelEditComponent } from './panel-edit/panel-edit.component';
 import { PanelComponent } from './panel/panel.component';
 import { CaptionItemsState } from './sotre/caption-items.state';
 import { EnvironmentState } from './sotre/environment.state';
+import { EditableGuard } from './editable.guard';
 
 export const routes = [
   { path: 'display/:room', component: DisplayComponent },
-  { path: 'edit', component: PanelEditComponent },
+  { path: 'edit', component: PanelEditComponent, canActivate: [EditableGuard] },
   { path: '', component: PanelComponent }
 ];
 

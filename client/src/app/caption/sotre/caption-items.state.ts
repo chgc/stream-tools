@@ -1,23 +1,24 @@
-import { Action, State, StateContext, Store } from '@ngxs/store';
-import { tap } from 'rxjs/operators';
-import { CaptionService } from '../services/caption.service';
+import { Action, State, StateContext, Store } from "@ngxs/store";
+import { tap } from "rxjs/operators";
+import { CaptionService } from "../services/caption.service";
 import {
   GetCaptionList,
   AddCaption,
   UpdateCaption,
   RemoveCaption
-} from './caption-items.action';
+} from "./caption-items.action";
 
 export interface CaptionModel {
   id: string;
   label: string;
   value: string;
+  displayCalss: string;
   colorClass: string;
   style: { [key: string]: string };
 }
 
 @State<CaptionModel[]>({
-  name: 'captions',
+  name: "captions",
   defaults: []
 })
 export class CaptionItemsState {

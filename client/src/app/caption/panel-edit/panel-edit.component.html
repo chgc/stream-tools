@@ -1,32 +1,63 @@
 <div class="container">
-  <div class="row">
+  <ul class="nav nav-tabs">
+    <li role="presentation" class="active" [ngClass]="{active: currentTab === 'caption'}">
+      <a (click)="setTab('caption')">彈幕維護</a>
+    </li>
+    <li role="presentation" [ngClass]="{active: currentTab === 'basic'}">
+      <a (click)="setTab('basic')">其他參數</a>
+    </li>
+  </ul>
+  <div class="row" *ngIf="currentTab === 'basic'">
+    <div class="col-xs-12 col-sm-12 col-md-12">
+      <h3>顯示邊界設定</h3>
+      <form [formGroup]="areaPositionGroup" class="form-inline">
+        <div class="form-group">
+          <label>最大寬度</label>
+          <input type="number" class="form-control" id="label" placeholder="最大寬度" formControlName="MAX_WIDTH">
+        </div>
+        <div class="form-group">
+          <label>最大高度</label>
+          <input type="number" class="form-control" id="label" placeholder="最大高度" formControlName="MAX_HEIGHT">
+        </div>
+        <div class="form-group">
+          <label>起始X點</label>
+          <input type="number" class="form-control" id="label" placeholder="起始X點" formControlName="START_X">
+        </div>
+        <div class="form-group">
+          <label>起始Y點</label>
+          <input type="number" class="form-control" id="label" placeholder="起始Y點" formControlName="START_Y">
+        </div>
+      </form>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12">
+      <h3>全域 CSS 樣式</h3>
+      <form [formGroup]="customCSSGroup">
+        <ace-editor formControlName="customCSS" theme="github" mode="css" style="min-height: 200px; width:100%; overflow: auto;">
+        </ace-editor>
+      </form>
+    </div>
+  </div>
+  <div class="row" *ngIf="currentTab === 'caption'">
     <a routerLink="../" class="btn btn-primary pull-right">返回</a>
     <div class="col-xs-12 col-sm-12 col-md-3">
-      <section>        
-        <ul>
-          <li class="btn btn-link" (click)="createCaption()">新增</li>
-          <li class="btn btn-block" *ngFor="let caption of items$ | async; trackBy: trackByfn" [ngClass]="caption.colorClass" [ngStyle]="caption?.style"
-            (click)="setFormGroup(caption)">            
+      <section *ngIf="items$ | async as items">
+        <button class="btn btn-link ml30" (click)="createCaption()">新增範本</button>
+        <ul class="list">
+          <li class="btn btn-block" *ngFor="let caption of items; trackBy: trackByfn" [ngClass]="caption.colorClass"
+            [ngStyle]="caption?.style" (click)="setFormGroup(caption)">
             {{ caption.label }}
           </li>
         </ul>
+        <span class="ml30">共 {{ items.length }} 筆範本彈幕</span>
       </section>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-9">
       <div *ngIf="editGroups">
         <form [formGroup]="editGroups">
           <div class="form-group">
-            <label for="label">按鈕文字</label>
-            <input type="text" class="form-control" id="label" placeholder="按鈕文字" formControlName="label">
-            <div *ngIf="editGroups.get('label').invalid && (editGroups.get('label').dirty || editGroups.get('label').touched)"
-              class="alert alert-danger">
-              <div *ngIf="editGroups.get('label').hasError('required')">
-                按鈕文字為必填資訊
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="value">顯示文字</label>
+            <label for="value">顯示文字
+              <span class="text-danger">*</span>
+            </label>
             <input type="text" class="form-control" id="value" placeholder="顯示文字" formControlName="value">
             <div *ngIf="editGroups.get('value').invalid && (editGroups.get('value').dirty || editGroups.get('value').touched)"
               class="alert alert-danger">
@@ -36,16 +67,34 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="colorClass">按鈕顏色</label>
+            <label for="colorClass">顯示文字樣式 (可使用自訂全域 CSS 樣式)</label>
+            <input type="text" class="form-control" id="label" placeholder="按鈕顏色" formControlName="displayClass">
+          </div>
+          <div class="form-group">
+            <label for="label">按鈕文字
+              <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="form-control" id="label" placeholder="按鈕文字" formControlName="label">
+            <div *ngIf="editGroups.get('label').invalid && (editGroups.get('label').dirty || editGroups.get('label').touched)"
+              class="alert alert-danger">
+              <div *ngIf="editGroups.get('label').hasError('required')">
+                按鈕文字為必填資訊
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="colorClass">按鈕樣式</label>
             <input type="text" class="form-control" id="label" placeholder="按鈕顏色" formControlName="colorClass">
           </div>
           <div class="form-group">
             <label for="style">自訂 CSS Style</label>
-            <ace-editor formControlName="style" theme="github" mode="json" style="min-height: 200px; width:100%; overflow: auto;">
+            <ace-editor formControlName="style" theme="github" mode="json" style="min-height: 100px; width:100%; overflow: auto;">
             </ace-editor>
           </div>
-          <button type="button" class="btn btn-default" *ngIf="!editGroups.get('id').value" (click)="save()">新增</button>
-          <button type="button" class="btn btn-danger pull-right" *ngIf="editGroups.get('id').value" (click)="remove()">移除</button>
+          <button type="button" class="btn btn-default" *ngIf="!editGroups.get('id').value"
+            (click)="save()">新增</button>
+          <button type="button" class="btn btn-danger pull-right" *ngIf="editGroups.get('id').value"
+            (click)="remove()">移除</button>
         </form>
       </div>
     </div>

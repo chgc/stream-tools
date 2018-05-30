@@ -1,25 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { forkJoin, of, Observable } from 'rxjs';
-import { filter, map, mergeMap, tap } from 'rxjs/operators';
+import { Select, Store } from '@ngxs/store';
+import { Observable, from } from 'rxjs';
+import { concatMap, filter, map, mergeMap, tap } from 'rxjs/operators';
 import { AuthService } from '../../auth.service';
-import { CaptionService } from '../services/caption.service';
 import { CommandModel } from '../services/command.interface';
 import { ToolsService } from '../services/tools.service';
-import { Store, Select } from '@ngxs/store';
 import {
-  SetDisplayUrl,
+  AddCaption,
+  GetCaptionList,
+  RemoveCaption,
+  UpdateCaption
+} from '../sotre/caption-items.action';
+import {
   GetAreaPosition,
   GetCustomCSS,
-  SetUserID,
   SetAreaPosition,
-  SetCustomCSS
+  SetCustomCSS,
+  SetDisplayUrl,
+  SetUserID
 } from '../sotre/environment.action';
-import {
-  GetCaptionList,
-  UpdateCaption,
-  RemoveCaption,
-  AddCaption
-} from '../sotre/caption-items.action';
 
 @Component({
   selector: 'app-guest',
@@ -27,28 +26,6 @@ import {
   styleUrls: ['./panel.component.css']
 })
 export class PanelComponent implements OnInit {
-  // region
-  // buttons$ = of([
-  //   { label: '斗內時間', value: '斗內時間', colorClass: 'btn-danger', style: {} },
-  //   { label: '哈哈哈', value: '哈哈哈', colorClass: 'btn-warning', style: {} },
-  //   { label: '咬我啊', value: '咬我啊', colorClass: 'btn-primary', style: {} },
-  //   { label: '77777777', value: '77777777', colorClass: 'btn-primary', style: { order: 1, color: '#ff0' } },
-  //   { label: '買！都買！', value: '買！都買！', colorClass: 'btn-primary', style: {} },
-  //   { label: '作好！作滿！', value: '作好！作滿！', colorClass: 'btn-primary', style: {} },
-  //   { label: '捐好捐滿', value: '捐好捐滿', colorClass: 'btn-primary', style: {} },
-  //   { label: '推坑', value: '推坑', colorClass: 'btn-warning', style: {} },
-  //   { label: '牛排!!', value: '牛排!!', colorClass: 'btn-warning', style: {} },
-  //   { label: '啊！壞掉了!', value: '啊！壞掉了!', colorClass: 'btn-primary', style: {} },
-  //   { label: '嗶嗶！犯規！', value: '嗶嗶！犯規！', colorClass: 'btn-primary', style: {} },
-  //   { label: '欸～真假啦？！', value: '欸～真假啦？！', colorClass: 'btn-primary', style: {} },
-  //   { label: '人生好累', value: '人生好累', colorClass: 'btn-primary', style: {} },
-  //   { label: 'GG了', value: 'GG了', colorClass: 'btn-primary', style: {} },
-  //   { label: '有必要嗎??', value: '有必要嗎??', colorClass: 'btn-primary', style: {} },
-  //   { label: '幻覺！全都是幻覺', value: '幻覺！全都是幻覺', colorClass: 'btn-primary', style: {} },
-  //   { label: 'LIVE Demo 魔咒發生了！', value: 'LIVE Demo 魔咒發生了！', colorClass: 'btn-warning', style: {} }
-  // ]);
-  // endregion
-
   @Select(state => state.captions)
   items$: Observable<any>;
 
@@ -71,44 +48,41 @@ export class PanelComponent implements OnInit {
 
   ngOnInit() {
     this.store.select(state => state.environement).subscribe(caption => {
-      this.areaPosition = caption.areaPosition;
+      this.areaPosition = { ...caption.areaPosition };
       this.customCSS = caption.customCSS;
     });
 
     this.service.init();
 
-    const joinRoom = (context, userId) => context.service.joinRoom(userId);
-
-    const setUserID = userId => {
-      joinRoom(this, userId);
-      this.store.dispatch(new SetUserID(userId));
-    };
+    const joinRoom = userId => this.service.joinRoom(userId);
     const loadData = userId =>
-      this.store.dispatch([
+      from([
+        new SetUserID(userId),
         new SetDisplayUrl(),
         new GetCaptionList(),
         new GetAreaPosition(),
         new GetCustomCSS()
-      ]);
+      ]).pipe(concatMap(action => this.store.dispatch(action)));
 
     this.authService.authState
       .pipe(
         filter(user => !!user),
         map(user => user.uid),
-        tap(setUserID),
-        tap(loadData)
+        tap(joinRoom),
+        mergeMap(loadData)
       )
       .subscribe();
   }
-  sendMessage(value) {
-    this.service.sendCommand(this.buildCommand(value));
+
+  sendMessage(value, colorClass) {
+    this.service.sendCommand(this.buildCommand(value, colorClass));
   }
 
-  buildCommand(value) {
+  buildCommand(value, colorClass) {
     return <CommandModel>{
       command: 'message',
       message: value,
-      className: `fz${this.getRandomNumber(1, 5)}`,
+      className: `fz${this.getRandomNumber(1, 5)} ${colorClass}`,
       style: {
         left: `${this.getRandomNumber(
           this.areaPosition.START_X,

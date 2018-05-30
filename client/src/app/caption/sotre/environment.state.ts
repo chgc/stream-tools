@@ -23,10 +23,10 @@ export interface CaptionPanelModel {
     displayUrl: '',
     customCSS: '',
     areaPosition: {
-      MAX_WIDTH: 1620,
-      MAX_HEIGHT: 980,
-      START_X: 100,
-      START_Y: 50
+      MAX_WIDTH: 0,
+      MAX_HEIGHT: 0,
+      START_X: 0,
+      START_Y: 0
     }
   }
 })

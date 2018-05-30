@@ -18,21 +18,6 @@ body {
   margin: 0;
   -webkit-text-stroke: 3px #000;
 }
-/* .r1 {
-  transform: rotate(8deg);
-}
-.r2 {
-  transform: rotate(-8deg);
-}
-.r3 {
-  transform: rotate(25deg);
-}
-.r4 {
-  transform: rotate(-25deg);
-}
-.r5 {
-  transform: rotate(40deg);
-} */
 
 .fz1 {
   font-size: 40px;

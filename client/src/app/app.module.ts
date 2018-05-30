@@ -13,6 +13,7 @@ import { AuthGuard } from './auth.guard';
 import { LoginComponent } from './main/login/login.component';
 import { MainModule } from './main/main.module';
 import { MainComponent } from './main/main/main.component';
+import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 
 const routes: Route[] = [
   { path: 'login', component: LoginComponent },
@@ -31,6 +32,11 @@ const routes: Route[] = [
   { path: '**', redirectTo: '/main/remote', pathMatch: 'full' }
 ];
 
+const extraImports = [];
+if (!environment.production) {
+  extraImports.push(NgxsReduxDevtoolsPluginModule.forRoot());
+}
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -42,7 +48,8 @@ const routes: Route[] = [
     NgxsModule.forRoot([]),
     AngularFireAuthModule,
     AngularFirestoreModule,
-    MainModule
+    MainModule,
+    ...extraImports
   ],
   providers: [],
   bootstrap: [AppComponent]

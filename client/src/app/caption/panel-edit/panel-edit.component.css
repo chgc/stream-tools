@@ -1,6 +1,13 @@
-.container {
-  padding-top: 30px;
-}
 .card {
   margin: 0 0.5em 0.5em 0px;
+}
+
+.list{
+  overflow: scroll;
+  max-height: 60vh;
+  padding-right: 30px;
+}
+
+.ml30{
+  margin-left: 30px;
 }
