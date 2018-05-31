@@ -8,7 +8,7 @@ using stream_tools;
 
 namespace streamtools.Migrations
 {
-    [DbContext(typeof(StreamContext))]
+    [DbContext(typeof(StreamDbContext))]
     [Migration("20180530071409_InitialCreate")]
     partial class InitialCreate
     {
