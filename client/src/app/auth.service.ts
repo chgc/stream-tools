@@ -1,7 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from 'angularfire2/auth';
 import { Router } from '@angular/router';
 import { firebase } from '@firebase/app';
+import { AngularFireAuth } from 'angularfire2/auth';
 import { from } from 'rxjs';
 
 @Injectable({
@@ -11,9 +12,16 @@ export class AuthService {
   authState = this.afAuth.authState;
   idToken;
 
-  constructor(public afAuth: AngularFireAuth, private router: Router) {
+  constructor(
+    public afAuth: AngularFireAuth,
+    private router: Router,
+    private http: HttpClient
+  ) {
     this.afAuth.idToken.subscribe(token => {
       this.idToken = token;
+      if (token) {
+        this.signUp().subscribe();
+      }
     });
   }
 
@@ -31,6 +39,10 @@ export class AuthService {
         break;
     }
     return from(this.afAuth.auth.signInWithPopup(provider));
+  }
+
+  signUp() {
+    return this.http.get('/api/Account/signup');
   }
 
   signOut() {

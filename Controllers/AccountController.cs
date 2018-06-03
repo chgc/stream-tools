@@ -14,12 +14,12 @@ namespace stream_tools.Controllers
 
   [Route("[controller]")]
   public class AccountController : Controller
-  {
-    private readonly SignInManager<ApplicationUser> _signInManager;
+  {    
+    private readonly UserManager<ApplicationUser> _userManager;    
 
-    public AccountController(SignInManager<ApplicationUser> signInManager)
+    public AccountController(UserManager<ApplicationUser> userManager)
     {
-      _signInManager = signInManager;
+      _userManager = userManager;
     }
 
     [HttpGet("Login")]
@@ -29,9 +29,39 @@ namespace stream_tools.Controllers
     }
 
     [Authorize]
-    [HttpGet("/api/account/test")]
-    public IActionResult Test()
+    [HttpGet("/api/account/signup")]
+    public async Task<IActionResult> SignUp()
     {
+      var tokenInfo = HttpContext.User;
+
+      var uid = tokenInfo.FindFirst("user_id");
+      var name = tokenInfo.FindFirst("name");
+      var email = tokenInfo.FindFirst(ClaimTypes.Email);
+      var user = await _userManager.FindByIdAsync(uid.Value);
+      if (user == null)
+      {
+        user = new ApplicationUser()
+        {
+          Id = uid.Value,
+          UserName = uid.Value,
+          DisplayName = name.Value,
+          Email = email.Value
+        };
+        var result =
+          await _userManager.CreateAsync(user, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
+        if (!result.Succeeded)
+        {
+          return BadRequest("");
+        }
+      }
+      else
+      {
+        if (name.Value != user.DisplayName)
+        {
+          user.DisplayName = name.Value;
+          await _userManager.UpdateAsync(user);
+        }
+      }
       return Json(true);
     }
 

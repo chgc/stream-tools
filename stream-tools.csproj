@@ -20,10 +20,4 @@
    <PackageReference Include="AspNetCore.Firebase.Authentication" Version="2.0.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="Views\_ViewImports.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-  </ItemGroup>
-
 </Project>

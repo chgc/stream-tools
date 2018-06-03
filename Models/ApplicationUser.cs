@@ -8,6 +8,6 @@ namespace stream_tools.Models
 {
   public class ApplicationUser : IdentityUser
   {
-
+    public string DisplayName { get; set; }
   }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using stream_tools;
 
 namespace streamtools.Migrations
 {
     [DbContext(typeof(StreamDbContext))]
-    partial class StreamContextModelSnapshot : ModelSnapshot
+    [Migration("20180603132442_application_user_displayName")]
+    partial class application_user_displayName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

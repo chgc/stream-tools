@@ -36,7 +36,14 @@ namespace stream_tools
       services.AddDbContext<StreamDbContext>(options =>
           options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-      services.AddIdentity<ApplicationUser, IdentityRole>()
+      services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        {
+          options.Password.RequiredLength = 8;
+          options.Password.RequireLowercase = false;
+          options.Password.RequireUppercase = false;
+          options.Password.RequireNonAlphanumeric = false;
+          options.Password.RequireDigit = false;
+        })
         .AddEntityFrameworkStores<StreamDbContext>()
          .AddDefaultTokenProviders();
 

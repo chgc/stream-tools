@@ -23,9 +23,6 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {}
 
-  test(){
-    this.http.get('/api/Account/test').subscribe(value=> console.log(value));
-  }
   signOut() {
     this.authService.signOut().then(() => {
       this.store.dispatch(new ObsDisconnect());
