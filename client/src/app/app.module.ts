@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Route, RouterModule } from '@angular/router';
 import { NgxsModule } from '@ngxs/store';
@@ -14,6 +15,7 @@ import { LoginComponent } from './main/login/login.component';
 import { MainModule } from './main/main.module';
 import { MainComponent } from './main/main/main.component';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
+import { TokenInterceptor } from './token.intecerceptor';
 
 const routes: Route[] = [
   { path: 'login', component: LoginComponent },
@@ -43,6 +45,7 @@ if (!environment.production) {
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    HttpClientModule,
     RouterModule.forRoot(routes),
     AngularFireModule.initializeApp(environment.firebase),
     NgxsModule.forRoot([]),
@@ -51,7 +54,13 @@ if (!environment.production) {
     MainModule,
     ...extraImports
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

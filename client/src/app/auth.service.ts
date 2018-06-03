@@ -9,7 +9,13 @@ import { from } from 'rxjs';
 })
 export class AuthService {
   authState = this.afAuth.authState;
-  constructor(public afAuth: AngularFireAuth, private router: Router) {}
+  idToken;
+
+  constructor(public afAuth: AngularFireAuth, private router: Router) {
+    this.afAuth.idToken.subscribe(token => {
+      this.idToken = token;
+    });
+  }
 
   signInWithSocial(loginProvider: 'google' | 'github') {
     let provider;

@@ -3,6 +3,7 @@ import { AuthService } from '../../auth.service';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { ObsDisconnect } from '@store/obs.actions';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-main',
@@ -14,13 +15,17 @@ export class MainComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private store: Store
+    private store: Store,
+    private http: HttpClient
   ) {
     this.isDisplay = this.router.url.includes('/main/caption/display');
   }
 
   ngOnInit() {}
 
+  test(){
+    this.http.get('/api/Account/test').subscribe(value=> console.log(value));
+  }
   signOut() {
     this.authService.signOut().then(() => {
       this.store.dispatch(new ObsDisconnect());
