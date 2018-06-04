@@ -36,7 +36,6 @@ export class EnvironmentState {
   @Action(SetUserID)
   setUserId(ctx: StateContext<CaptionPanelModel>, action: SetUserID) {
     ctx.setState({ ...ctx.getState(), uid: action.uid });
-    return this.captionService.initFireStore(action.uid);
   }
 
   @Action(SetDisplayUrl)
