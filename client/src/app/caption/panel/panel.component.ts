@@ -34,10 +34,10 @@ export class PanelComponent implements OnInit {
 
   customCSS = '';
   areaPosition = {
-    MAX_WIDTH: 1620,
-    MAX_HEIGHT: 980,
-    START_X: 100,
-    START_Y: 50
+    maxWidth: 1620,
+    maxHeight: 980,
+    startX: 100,
+    startY: 50
   };
 
   constructor(
@@ -85,12 +85,12 @@ export class PanelComponent implements OnInit {
       className: `fz${this.getRandomNumber(1, 5)} ${colorClass}`,
       style: {
         left: `${this.getRandomNumber(
-          this.areaPosition.START_X,
-          this.areaPosition.MAX_WIDTH
+          this.areaPosition.startX,
+          this.areaPosition.maxWidth
         )}px`,
         top: `${this.getRandomNumber(
-          this.areaPosition.START_Y,
-          this.areaPosition.MAX_HEIGHT
+          this.areaPosition.startY,
+          this.areaPosition.maxHeight
         )}px`,
         transform: `rotate(${this.getRandomNumber(-45, 90)}deg)`
       }

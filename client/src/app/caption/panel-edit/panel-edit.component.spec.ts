@@ -82,18 +82,22 @@ describe('PanelEditComponent', () => {
     );
   });
 
-  it('should dispatch SetAreaPosition when areaPositionGroup Valuchange', () => {
-    spyOn(store, 'dispatch');
-    component.areaPositionGroup.patchValue({});
-    expect(store.dispatch).toHaveBeenCalledWith(
-      new SetAreaPosition({
-        MAX_WIDTH: 0,
-        MAX_HEIGHT: 0,
-        START_X: 0,
-        START_Y: 0
-      })
-    );
-  });
+  it(
+    'should dispatch SetAreaPosition when areaPositionGroup Valuchange',
+    fakeAsync(() => {
+      spyOn(store, 'dispatch');
+      component.areaPositionGroup.patchValue({});
+      tick(500);
+      expect(store.dispatch).toHaveBeenCalledWith(
+        new SetAreaPosition({
+          maxWidth: 0,
+          maxHeight: 0,
+          startX: 0,
+          startY: 0
+        })
+      );
+    })
+  );
 
   it(
     'should dispatch SetCustomCSS when customCSSGroup Valuchange',
@@ -109,8 +113,8 @@ describe('PanelEditComponent', () => {
     it('should setFormGroup when style is not empty', () => {
       spyOn(component.stop$, 'next');
       spyOn(component.editGroups, 'reset');
-      const mockCaption = { label: 'test', style: { order: 1 } };
-      const mockResult = { label: 'test', style: '{\n  "order": 1\n}' };
+      const mockCaption = { label: 'test', style: '{ order: 1 }' };
+      const mockResult = { label: 'test', style: '{ order: 1 }' };
       component.setFormGroup(mockCaption);
       expect(component.editGroups.reset).toHaveBeenCalledWith(mockResult);
     });
@@ -120,7 +124,7 @@ describe('PanelEditComponent', () => {
       spyOn(component.editGroups, 'reset');
       spyOn(component, 'save');
       const mockCaption = { label: 'test' };
-      const mockResult = { label: 'test', style: '' };
+      const mockResult = { label: 'test', style: undefined };
       component.setFormGroup(mockCaption);
       expect(component.editGroups.reset).toHaveBeenCalledWith(mockResult);
     });
@@ -142,6 +146,7 @@ describe('PanelEditComponent', () => {
       component.createCaption();
       expect(component.editGroups.value).toEqual({
         id: '',
+        uid: '',
         label: '',
         value: '',
         displayClass: '',
@@ -164,7 +169,7 @@ describe('PanelEditComponent', () => {
       spyOn(store, 'dispatch');
       spyOn(component, 'createCaption');
       const formValue = { label: 'test', value: 'test', style: '' };
-      const dispatchFormValue = { label: 'test', value: 'test', style: {} };
+      const dispatchFormValue = { label: 'test', value: 'test', style: '' };
       component.editGroups.patchValue(formValue);
       component.save(formValue);
       expect(store.dispatch).toHaveBeenCalledWith(
@@ -181,7 +186,7 @@ describe('PanelEditComponent', () => {
         id: '1',
         label: 'test',
         value: 'test',
-        style: {}
+        style: ''
       };
       component.editGroups.patchValue(formValue);
       component.save(formValue);

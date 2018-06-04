@@ -6,79 +6,52 @@ import {
 import { map, take, filter, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { CaptionModel } from '../sotre/caption-items.state';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CaptionService {
-  myCaptionDocument: AngularFirestoreDocument<any>;
-
-  constructor(private af: AngularFirestore) { }
-
-  initFireStore(uid) {
-    this.myCaptionDocument = this.af.doc(`caption/${uid}`);
-  }
+  constructor(private http: HttpClient) {}
 
   getCaptionList(): Observable<CaptionModel[]> {
-    const mapData = actions =>
-      actions.map(action => {
-        const data = action.payload.doc.data();
-        const id = action.payload.doc.id;
-        return { id, ...data };
-      });
-
-    return this.myCaptionDocument
-      .collection('captions')
-      .snapshotChanges()
-      .pipe(take(1), map(mapData));
+    return this.http.get<CaptionModel[]>('/api/caption/list');
   }
 
   createAndUpdateCaption(id, item) {
-    id = id || this.af.createId();
-    return this.myCaptionDocument
-      .collection('captions')
-      .doc(id)
-      .set(item);
+    if (!id) {
+      return this.http.post('api/caption/create', item);
+    } else {
+      return this.http.put(`api/caption/update/${id}`, item);
+    }
   }
 
   removeCaption(id) {
-    return this.myCaptionDocument
-      .collection('captions')
-      .doc(id)
-      .delete();
+    return this.http.delete(`api/caption/remove/${id}`);
   }
 
   setAreaPosition(areaPosition) {
-    return this.myCaptionDocument.update(areaPosition);
+    return this.http.post('api/caption/areaPosition', areaPosition);
   }
 
   getAreaPosition() {
-    const pluckFields = (item: any) => ({
-      MAX_WIDTH: item.MAX_WIDTH,
-      MAX_HEIGHT: item.MAX_HEIGHT,
-      START_X: item.START_X,
-      START_Y: item.START_Y
-    });
-
-    return this.myCaptionDocument
-      .valueChanges()
-      .pipe(take(1), filter(value => !!value), map(pluckFields));
+    return this.http.get('api/caption/areaPosition');
   }
 
   setCustomCSS(cssStyle) {
-    return this.myCaptionDocument.set({ cssStyle: cssStyle }, { merge: true });
+    return this.http.post('api/caption/customCSS', { cssStyle: cssStyle });
   }
 
   getCustomCSS(): Observable<string> {
-    return this.myCaptionDocument
-      .valueChanges()
-      .pipe(take(1), map(item => item.cssStyle));
+    return this.http
+      .get('api/caption/customCSS')
+      .pipe(map((item: any) => item.cssStyle));
   }
 
   setOBSConnectionInformation(host, port) {
-    return this.myCaptionDocument.set(
-      { connectionInfo: { host, port } },
-      { merge: true }
-    );
+    return this.http.post('api/caption/connectionInfo', {
+      host: host,
+      port: port
+    });
   }
 }

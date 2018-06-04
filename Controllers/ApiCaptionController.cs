@@ -17,17 +17,16 @@ namespace stream_tools.Controllers
   [Authorize]
   public class ApiCaptionController : ControllerBase
   {
-    private readonly StreamDbContext _dbContext;
-    private Claim uid;
+    private readonly StreamDbContext _dbContext;    
     public ApiCaptionController(StreamDbContext DbContext)
     {
-      _dbContext = DbContext;
-      uid = HttpContext.User.FindFirst("user_id");
+      _dbContext = DbContext;      
     }
 
     [HttpGet("list")]
     public IQueryable<Caption> GetCaptions()
     {
+     var  uid = HttpContext.User.FindFirst("user_id");
       return _dbContext.Captions.Where(x => x.Uid == uid.Value);
     }
 
@@ -36,6 +35,8 @@ namespace stream_tools.Controllers
     {
       if (ModelState.IsValid)
       {
+        var uid = HttpContext.User.FindFirst("user_id");
+        item.Uid = uid.Value;
         _dbContext.Captions.Add(item);
         await _dbContext.SaveChangesAsync();
       }
@@ -44,10 +45,10 @@ namespace stream_tools.Controllers
     [HttpPut("update/{id}")]
     public async Task UpdateCaptions(int id, Caption item)
     {
-      var _caption = _dbContext.Captions.FindAsync(id);
+      var _caption = await _dbContext.Captions.FindAsync(id);
       if (_caption != null)
       {
-        _dbContext.Entry(_caption).CurrentValues.SetValues(item);
+        _dbContext.Captions.Attach(item);
         await _dbContext.SaveChangesAsync();
       }
     }
@@ -55,7 +56,7 @@ namespace stream_tools.Controllers
     [HttpDelete("remove/{id}")]
     public async Task RemoveCaptions(int id)
     {
-      var _caption = _dbContext.Captions.FindAsync(id);
+      var _caption = await _dbContext.Captions.FindAsync(id);
       if (_caption != null)
       {
         _dbContext.Remove(_caption);
@@ -66,6 +67,7 @@ namespace stream_tools.Controllers
     [HttpGet("areaPosition")]
     public async Task<AreaPosition> GetAreaPosition()
     {
+      var uid = HttpContext.User.FindFirst("user_id");
       return await _dbContext.EnvSettings.Select(x => new AreaPosition()
       {
         Id = x.Id,
@@ -80,6 +82,7 @@ namespace stream_tools.Controllers
     [HttpPost("areaPosition")]
     public async Task UpdateAreaPosition(AreaPosition model)
     {
+      var uid = HttpContext.User.FindFirst("user_id");
       if (ModelState.IsValid)
       {
         var _envSetting = await _dbContext.EnvSettings.FirstOrDefaultAsync(x => x.Uid == uid.Value);
@@ -97,7 +100,7 @@ namespace stream_tools.Controllers
         else
         {
           _envSetting.MaxHeight = model.MaxHeight;
-          _envSetting.MaxWidth = model.MaxHeight;
+          _envSetting.MaxWidth = model.MaxWidth;
           _envSetting.StartX = model.StartX;
           _envSetting.StartY = model.StartY;
         }
@@ -108,6 +111,7 @@ namespace stream_tools.Controllers
     [HttpGet("customCSS")]
     public async Task<CustomCSS> GetCustomCSS()
     {
+      var uid = HttpContext.User.FindFirst("user_id");
       return await _dbContext.EnvSettings.Select(x => new CustomCSS()
       {
         Id = x.Id,
@@ -119,6 +123,7 @@ namespace stream_tools.Controllers
     [HttpPost("customCSS")]
     public async Task UpdateCustomCSS(CustomCSS model)
     {
+      var uid = HttpContext.User.FindFirst("user_id");
       if (ModelState.IsValid)
       {
         var _envSetting = await _dbContext.EnvSettings.FirstOrDefaultAsync(x => x.Uid == uid.Value);
@@ -141,12 +146,14 @@ namespace stream_tools.Controllers
     [HttpGet("connectionInfo")]
     public async Task<Models.ConnectionInfo> GetConnectionInfo()
     {
+      var uid = HttpContext.User.FindFirst("user_id");
       return await _dbContext.ConnectionInfos.FirstOrDefaultAsync(x => x.Uid == uid.Value);
     }
 
     [HttpPost("connectionInfo")]
     public async Task UpdateConnectionInfo(Models.ConnectionInfo model)
     {
+      var uid = HttpContext.User.FindFirst("user_id");
       if (ModelState.IsValid)
       {
         var _connectionInfo = await _dbContext.ConnectionInfos.FirstOrDefaultAsync(x => x.Uid == uid.Value);

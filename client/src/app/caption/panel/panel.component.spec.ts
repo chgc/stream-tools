@@ -72,10 +72,10 @@ describe('panelComponent', () => {
 
   it('should build a command model', () => {
     component.areaPosition = {
-      START_X: 0,
-      START_Y: 0,
-      MAX_HEIGHT: 0,
-      MAX_WIDTH: 0
+      startX: 0,
+      startY: 0,
+      maxHeight: 0,
+      maxWidth: 0
     };
     spyOn(component, 'getRandomNumber').and.callFake(
       (startNumber, maxNumber) => startNumber
@@ -168,7 +168,10 @@ describe('panelComponent', () => {
       const btn = elements.querySelector('button');
       btn.click();
       expect(component.sendMessage).toHaveBeenCalled();
-      expect(component.sendMessage).toHaveBeenCalledWith('斗內時間', 'btn-danger');
+      expect(component.sendMessage).toHaveBeenCalledWith(
+        '斗內時間',
+        'btn-danger'
+      );
     });
   });
 });

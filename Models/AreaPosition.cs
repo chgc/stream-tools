@@ -9,9 +9,9 @@ namespace stream_tools.Models
   {
     public int Id { get; set; }
     public string Uid { get; set; }
-    public decimal MaxHeight { get; set; }
-    public decimal MaxWidth { get; set; }
-    public decimal StartX { get; set; }
-    public decimal StartY { get; set; }
+    public decimal? MaxHeight { get; set; }
+    public decimal? MaxWidth { get; set; }
+    public decimal? StartX { get; set; }
+    public decimal? StartY { get; set; }
   }
 }

@@ -41,6 +41,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
 
   editGroups: FormGroup = this.fb.group({
     id: '',
+    uid: '',
     label: ['', [Validators.required]],
     value: ['', [Validators.required]],
     displayClass: '',
@@ -49,10 +50,10 @@ export class PanelEditComponent implements OnInit, OnDestroy {
   });
 
   areaPositionGroup = this.fb.group({
-    MAX_WIDTH: [],
-    MAX_HEIGHT: [],
-    START_X: [],
-    START_Y: []
+    maxWidth: [],
+    maxHeight: [],
+    startX: [],
+    startY: []
   });
 
   customCSSGroup = this.fb.group({
@@ -93,8 +94,11 @@ export class PanelEditComponent implements OnInit, OnDestroy {
 
   initAreaEnvironmentFormGroup() {
     this.areaPositionGroup.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(value => this.store.dispatch(new SetAreaPosition(value)));
+      .pipe(takeUntil(this.destroy$), debounceTime(500))
+      .subscribe(value => {
+        console.log(value);
+        this.store.dispatch(new SetAreaPosition(value));
+      });
   }
 
   initCustomCSSGroup() {
@@ -110,7 +114,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     try {
       caption = {
         ...caption,
-        style: JSON.stringify(caption.style, null, 2) || ''
+        style: caption.style
       };
     } catch {}
     this.editGroups.reset(caption);
@@ -123,6 +127,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
   createCaption() {
     this.editGroups.reset({
       id: '',
+      uid: '',
       label: '',
       value: '',
       displayClass: '',
@@ -139,7 +144,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     try {
       formValue = {
         ...formValue,
-        style: JSON.parse(formValue.style || '{}')
+        style: formValue.style
       };
     } catch {}
     if (formValue.id) {

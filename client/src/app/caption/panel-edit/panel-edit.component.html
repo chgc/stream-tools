@@ -13,20 +13,21 @@
       <form [formGroup]="areaPositionGroup" class="form-inline">
         <div class="form-group">
           <label>最大寬度</label>
-          <input type="number" class="form-control" id="label" placeholder="最大寬度" formControlName="MAX_WIDTH">
+          <input type="number" class="form-control" id="label" placeholder="最大寬度" formControlName="maxWidth">
         </div>
         <div class="form-group">
           <label>最大高度</label>
-          <input type="number" class="form-control" id="label" placeholder="最大高度" formControlName="MAX_HEIGHT">
+          <input type="number" class="form-control" id="label" placeholder="最大高度" formControlName="maxHeight">
         </div>
         <div class="form-group">
           <label>起始X點</label>
-          <input type="number" class="form-control" id="label" placeholder="起始X點" formControlName="START_X">
+          <input type="number" class="form-control" id="label" placeholder="起始X點" formControlName="startX">
         </div>
         <div class="form-group">
           <label>起始Y點</label>
-          <input type="number" class="form-control" id="label" placeholder="起始Y點" formControlName="START_Y">
+          <input type="number" class="form-control" id="label" placeholder="起始Y點" formControlName="startY">
         </div>
+        <button type="submit" class="btn btn-primary">Save</button>
       </form>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12">
@@ -91,10 +92,8 @@
             <ace-editor formControlName="style" theme="github" mode="json" style="min-height: 100px; width:100%; overflow: auto;">
             </ace-editor>
           </div>
-          <button type="button" class="btn btn-default" *ngIf="!editGroups.get('id').value"
-            (click)="save()">新增</button>
-          <button type="button" class="btn btn-danger pull-right" *ngIf="editGroups.get('id').value"
-            (click)="remove()">移除</button>
+          <button type="button" class="btn btn-default" *ngIf="!editGroups.get('id').value" (click)="save()">新增</button>
+          <button type="button" class="btn btn-danger pull-right" *ngIf="editGroups.get('id').value" (click)="remove()">移除</button>
         </form>
       </div>
     </div>

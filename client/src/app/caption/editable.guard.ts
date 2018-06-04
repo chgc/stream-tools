@@ -18,7 +18,7 @@ export class EditableGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> {
-    return this.store.select(state => state.environement).pipe(
+    return this.store.select(s => s.environement).pipe(
       map(env => env.uid),
       map(uid => !!uid),
       tap(hasUid => {
