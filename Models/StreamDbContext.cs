@@ -9,5 +9,8 @@ namespace stream_tools
   {
     public StreamDbContext(DbContextOptions<StreamDbContext> options) : base(options) { }
 
+    public DbSet<Caption> Captions { get; set; }
+    public DbSet<EnvSetting> EnvSettings { get; set; }
+    public DbSet<ConnectionInfo> ConnectionInfos { get; set; }
   }
 }
