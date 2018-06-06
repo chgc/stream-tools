@@ -27,8 +27,6 @@ export class CaptionItemsState {
 
   @Action(GetCaptionList)
   getCaptionList(ctx: StateContext<CaptionModel[]>, action: GetCaptionList) {
-    const currentState = ctx.getState();
-    const uid = this.store.selectSnapshot(state => state.environement.uid);
     const updateCaptionsListState = (captions: CaptionModel[]) =>
       ctx.setState([...captions]);
 
