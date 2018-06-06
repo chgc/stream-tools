@@ -12,7 +12,7 @@ import {
   distinctUntilChanged
 } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { CommandModel } from '../services/command.interface';
+import { CommandModelTemp } from '../services/command.interface';
 import { ToolsService } from '../services/tools.service';
 import { Store } from '@ngxs/store';
 import { GetCustomCSS, SetUserID } from '../sotre/environment.action';
@@ -24,7 +24,7 @@ import { GetCustomCSS, SetUserID } from '../sotre/environment.action';
 })
 export class DisplayComponent implements OnInit, OnDestroy {
   message$ = this.service.message$;
-  messages: CommandModel[] = [];
+  messages: CommandModelTemp[] = [];
   tasks$ = new Subject<Observable<any>>();
   remover$ = of('').pipe(
     delay(environment.delayTime),
@@ -40,7 +40,7 @@ export class DisplayComponent implements OnInit, OnDestroy {
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(param => {
       this.service.joinRoom(param.get('room'));
       this.store.dispatch(new SetUserID(param.get('room')));
-      this.store.dispatch(new GetCustomCSS());
+      this.store.dispatch(new GetCustomCSS(param.get('room')));
     });
   }
 
@@ -49,7 +49,10 @@ export class DisplayComponent implements OnInit, OnDestroy {
     this.service.init();
     this.tasks$.pipe(mergeMap(task => task)).subscribe();
     this.message$
-      .pipe(tap(value => this.messages.push({ ...value })))
+      .pipe(
+        tap(v => console.log(v)),
+        tap(value => this.messages.push({ ...value }))
+      )
       .subscribe(value => {
         this.tasks$.next(this.remover$);
       });

@@ -21,6 +21,7 @@ import { CaptionItemsState } from '../sotre/caption-items.state';
 import { SetAreaPosition, SetCustomCSS } from '../sotre/environment.action';
 import { EnvironmentState } from '../sotre/environment.state';
 import { PanelComponent } from './panel.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 // #endregion
 
 describe('panelComponent', () => {
@@ -37,14 +38,19 @@ describe('panelComponent', () => {
   ]);
   const fakeCaptionService = jasmine.createSpyObj('fakeCaptionService', [
     'initFireStore',
-    'getCaptionList'
+    'getCaptionList',
+    'getAreaPosition',
+    'getCustomCSS'
   ]);
   let store: Store;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [PanelComponent],
-      imports: [NgxsModule.forRoot([EnvironmentState, CaptionItemsState])],
+      imports: [
+        HttpClientTestingModule,
+        NgxsModule.forRoot([EnvironmentState, CaptionItemsState])
+      ],
       providers: [
         { provide: AuthService, useValue: FakeAuthService },
         { provide: ToolsService, useValue: fakeToolsService },
@@ -57,6 +63,9 @@ describe('panelComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PanelComponent);
     component = fixture.componentInstance;
+    fakeCaptionService.getCaptionList.and.returnValue(of([]));
+    fakeCaptionService.getAreaPosition.and.returnValue(of([]));
+    fakeCaptionService.getCustomCSS.and.returnValue(of([]));
     fixture.detectChanges();
   });
 

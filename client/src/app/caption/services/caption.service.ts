@@ -51,9 +51,9 @@ export class CaptionService {
     return this.http.post('api/caption/customCSS', { cssStyle: cssStyle });
   }
 
-  getCustomCSS(): Observable<string> {
+  getCustomCSS(id = ''): Observable<string> {
     return this.http
-      .get('api/caption/customCSS')
+      .get(`api/caption/customCSS/${id}`)
       .pipe(map((item: any) => item.cssStyle));
   }
 

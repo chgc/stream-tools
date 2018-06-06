@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HubService } from './hub.service';
 import { Subject, bindCallback } from 'rxjs';
-import { CommandModel } from './command.interface';
+import { CommandModelTemp } from './command.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ToolsService {
-  message$ = new Subject<CommandModel>();
+  message$ = new Subject<CommandModelTemp>();
   private roomName = '';
-  constructor(private hubService: HubService) { }
+  constructor(private hubService: HubService) {}
 
   init() {
     this.addReceiveCommand();

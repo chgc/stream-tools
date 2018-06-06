@@ -76,7 +76,9 @@ export class EnvironmentState {
     const currentState = ctx.getState();
     const updateCustomCSSState = customCSS =>
       ctx.setState({ ...currentState, customCSS });
-    return this.captionService.getCustomCSS().pipe(tap(updateCustomCSSState));
+    return this.captionService
+      .getCustomCSS(action.payload)
+      .pipe(tap(updateCustomCSSState));
   }
 
   @Action(SetCustomCSS)

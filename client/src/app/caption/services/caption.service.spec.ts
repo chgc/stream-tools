@@ -105,7 +105,7 @@ describe('CaptionService', () => {
     service.getCustomCSS().subscribe(value => {
       expect(value).toBe('css');
     });
-    const req = httpTestingController.expectOne('api/caption/customCSS');
+    const req = httpTestingController.expectOne('api/caption/customCSS/');
     expect(req.request.method).toEqual('GET');
     req.flush(mockData);
     httpTestingController.verify();
