@@ -47,7 +47,8 @@ namespace stream_tools
         .AddEntityFrameworkStores<StreamDbContext>()
          .AddDefaultTokenProviders();
 
-      services.AddFirebaseAuthentication("https://securetoken.google.com/stream-tool", "stream-tool");
+            services.AddSignalR().AddAzureSignalR();
+        }
 
       // services.AddIdentityServer()
       //            .AddDeveloperSigningCredential();
