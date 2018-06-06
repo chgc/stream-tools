@@ -12,7 +12,7 @@ import {
   distinctUntilChanged
 } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { CommandModelTemp } from '../services/command.interface';
+import { CommandModel } from '../services/command.interface';
 import { ToolsService } from '../services/tools.service';
 import { Store } from '@ngxs/store';
 import { GetCustomCSS, SetUserID } from '../sotre/environment.action';
@@ -24,7 +24,7 @@ import { GetCustomCSS, SetUserID } from '../sotre/environment.action';
 })
 export class DisplayComponent implements OnInit, OnDestroy {
   message$ = this.service.message$;
-  messages: CommandModelTemp[] = [];
+  messages: CommandModel[] = [];
   tasks$ = new Subject<Observable<any>>();
   remover$ = of('').pipe(
     delay(environment.delayTime),
