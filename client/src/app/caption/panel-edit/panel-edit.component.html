@@ -40,6 +40,7 @@
   </div>
   <div class="row" *ngIf="currentTab === 'caption'">
     <a routerLink="../" class="btn btn-primary pull-right">返回</a>
+    <button type="button" class="btn btn-primary pull-right" (click)="clone()" *ngIf="(items$ | async).length ===0">遷移</button>
     <div class="col-xs-12 col-sm-12 col-md-3">
       <section *ngIf="items$ | async as items">
         <button class="btn btn-link ml30" (click)="createCaption()">新增範本</button>
@@ -93,6 +94,7 @@
             </ace-editor>
           </div>
           <button type="button" class="btn btn-default" *ngIf="!editGroups.get('id').value" (click)="save()">新增</button>
+          <button type="button" class="btn btn-default" *ngIf="editGroups.get('id').value" (click)="copyCaption()">複製</button>
           <button type="button" class="btn btn-danger pull-right" *ngIf="editGroups.get('id').value" (click)="remove()">移除</button>
         </form>
       </div>

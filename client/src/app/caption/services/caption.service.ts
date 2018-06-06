@@ -15,7 +15,16 @@ export class CaptionService {
   constructor(private http: HttpClient) {}
 
   getCaptionList(): Observable<CaptionModel[]> {
-    return this.http.get<CaptionModel[]>('/api/caption/list');
+    return this.http.get<CaptionModel[]>('/api/caption/list').pipe(
+      map(captions =>
+        captions.map(caption => {
+          if (caption.style) {
+            caption.style = JSON.parse(caption.style);
+          }
+          return caption;
+        })
+      )
+    );
   }
 
   createAndUpdateCaption(id, item) {

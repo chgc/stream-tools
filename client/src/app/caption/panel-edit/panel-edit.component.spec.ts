@@ -20,6 +20,7 @@ import {
   AddCaption,
   UpdateCaption
 } from '../sotre/caption-items.action';
+import { AngularFirestore } from 'angularfire2/firestore';
 
 describe('PanelEditComponent', () => {
   let component: PanelEditComponent;
@@ -34,6 +35,9 @@ describe('PanelEditComponent', () => {
   ]);
 
   let store: Store;
+  const AngularFirestoreSpy = jasmine.createSpyObj('AngularFirestore', [
+    'collection'
+  ]);
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -45,7 +49,8 @@ describe('PanelEditComponent', () => {
       ],
       providers: [
         { provide: AuthService, useValue: FakeAuthService },
-        { provide: CaptionService, useValue: fakeCaptionService }
+        { provide: CaptionService, useValue: fakeCaptionService },
+        { provide: AngularFirestore, useValue: AngularFirestoreSpy }
       ]
     }).compileComponents();
   }));
@@ -113,8 +118,11 @@ describe('PanelEditComponent', () => {
     it('should setFormGroup when style is not empty', () => {
       spyOn(component.stop$, 'next');
       spyOn(component.editGroups, 'reset');
-      const mockCaption = { label: 'test', style: '{ order: 1 }' };
-      const mockResult = { label: 'test', style: '{ order: 1 }' };
+      const mockCaption = { label: 'test', style: { order: 1 } };
+      const mockResult = {
+        label: 'test',
+        style: JSON.stringify({ order: 1 }, null, 2)
+      };
       component.setFormGroup(mockCaption);
       expect(component.editGroups.reset).toHaveBeenCalledWith(mockResult);
     });
@@ -124,7 +132,7 @@ describe('PanelEditComponent', () => {
       spyOn(component.editGroups, 'reset');
       spyOn(component, 'save');
       const mockCaption = { label: 'test' };
-      const mockResult = { label: 'test', style: undefined };
+      const mockResult = { label: 'test', style: '' };
       component.setFormGroup(mockCaption);
       expect(component.editGroups.reset).toHaveBeenCalledWith(mockResult);
     });
@@ -153,6 +161,30 @@ describe('PanelEditComponent', () => {
         colorClass: 'btn-primary',
         style: ''
       });
+    });
+
+    it('should copy editGroup', () => {
+      const formValue = {
+        id: '1',
+        uid: 'test',
+        label: 'test',
+        value: 'test',
+        displayClass: '',
+        colorClass: 'btn-primary',
+        style: ''
+      };
+      const expectResult = {
+        id: '',
+        uid: 'test',
+        label: 'test',
+        value: 'test',
+        displayClass: '',
+        colorClass: 'btn-primary',
+        style: ''
+      };
+      component.editGroups.reset(formValue);
+      component.copyCaption();
+      expect(component.editGroups.value).toEqual(expectResult);
     });
   });
 

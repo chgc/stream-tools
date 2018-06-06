@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed, async } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AuthService } from '../../auth.service';
 import { MainComponent } from './main.component';
 import { NgxsModule } from '@ngxs/store';
@@ -20,6 +21,7 @@ describe('MainComponent', () => {
       declarations: [MainComponent],
       imports: [
         RouterTestingModule,
+        HttpClientTestingModule,
         NgxsModule.forRoot([
           ObsState,
           ScenesState,

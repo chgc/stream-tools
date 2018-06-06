@@ -12,6 +12,8 @@ import {
   map,
   takeUntil,
   tap,
+  take,
+  mergeMap,
   distinctUntilChanged
 } from 'rxjs/operators';
 import { AuthService } from '../../auth.service';
@@ -28,6 +30,7 @@ import {
   SetCustomCSS,
   SetUserID
 } from '../sotre/environment.action';
+import { AngularFirestore } from 'angularfire2/firestore';
 declare var ace: any;
 
 @Component({
@@ -67,7 +70,8 @@ export class PanelEditComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private store: Store,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private fireStore: AngularFirestore
   ) {}
 
   ngOnInit() {
@@ -76,6 +80,36 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     this.initCustomCSSGroup();
   }
 
+  clone() {
+    this.authService.authState
+      .pipe(
+        take(1),
+        mergeMap(user => {
+          return this.fireStore
+            .collection(`caption/${user.uid}/captions`)
+            .valueChanges()
+            .pipe(take(1));
+        }),
+        tap(captions => {
+          captions.forEach((caption: any) => {
+            let style = '';
+            try {
+              style = JSON.stringify(caption.style);
+            } catch {}
+            this.store.dispatch(
+              new AddCaption({
+                label: caption.label,
+                value: caption.value,
+                displayClass: caption.displayClass,
+                colorClass: caption.colorClass,
+                style: style
+              })
+            );
+          });
+        })
+      )
+      .subscribe();
+  }
   resetValue() {
     this.store.selectOnce(state => state.environement).subscribe(env => {
       if (env.areaPosition) {
@@ -94,16 +128,21 @@ export class PanelEditComponent implements OnInit, OnDestroy {
 
   initAreaEnvironmentFormGroup() {
     this.areaPositionGroup.valueChanges
-      .pipe(takeUntil(this.destroy$), debounceTime(500))
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(500)
+      )
       .subscribe(value => {
-        console.log(value);
         this.store.dispatch(new SetAreaPosition(value));
       });
   }
 
   initCustomCSSGroup() {
     this.customCSSGroup.valueChanges
-      .pipe(takeUntil(this.destroy$), debounceTime(500))
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(500)
+      )
       .subscribe(value =>
         this.store.dispatch(new SetCustomCSS(value.customCSS))
       );
@@ -114,17 +153,21 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     try {
       caption = {
         ...caption,
-        style: caption.style
+        style: JSON.stringify(caption.style, null, 2) || ''
       };
     } catch {}
     this.editGroups.reset(caption);
 
     this.editGroups.valueChanges
-      .pipe(takeUntil(this.stop$), debounceTime(500))
+      .pipe(
+        takeUntil(this.stop$),
+        debounceTime(500)
+      )
       .subscribe(formValue => this.save(formValue));
   }
 
   createCaption() {
+    this.stop$.next();
     this.editGroups.reset({
       id: '',
       uid: '',
@@ -133,6 +176,15 @@ export class PanelEditComponent implements OnInit, OnDestroy {
       displayClass: '',
       colorClass: 'btn-primary',
       style: ''
+    });
+  }
+
+  copyCaption() {
+    this.stop$.next();
+    const caption = this.editGroups.getRawValue();
+    this.editGroups.reset({
+      ...caption,
+      id: ''
     });
   }
 
