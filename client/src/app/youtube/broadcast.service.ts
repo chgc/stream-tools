@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 
-type broadcastStatus = 'all' | 'active ' | 'completed' | 'upcoming';
+type broadcastStatus = 'all' | 'active' | 'completed' | 'upcoming';
 
 @Injectable({
   providedIn: 'root'
@@ -12,22 +13,22 @@ export class BroadcastService {
   pollingIntervalMillis: number;
   constructor(private http: HttpClient) {}
 
-  getBroadcastList(status: broadcastStatus) {
+  getBroadcastList(status: broadcastStatus): Observable<any> {
     return this.http.get(
-      `https://www.googleapis.com/youtube/v3/liveBroadcasts?part=snippet&broadcastStatus=${status}`
+      `https://www.googleapis.com/youtube/v3/liveBroadcasts?part=snippet&broadcastStatus=${status}&broadcastType=all`
     );
   }
-  selectBroadcastCat(id): any {
+  selectBroadcastChat(id): any {
     this.liveChatId = id;
   }
 
-  getBroadcastChat(): any {
+  getBroadcastChat(): Observable<any> {
     if (this.liveChatId) {
       return this.http
         .get(
           `https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=${
             this.liveChatId
-          }&part=snippet`
+          }&part=authorDetails,snippet`
         )
         .pipe(
           tap(
@@ -36,5 +37,6 @@ export class BroadcastService {
           )
         );
     }
+    return of([]);
   }
 }

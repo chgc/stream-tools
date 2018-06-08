@@ -52,7 +52,7 @@ describe('BroadcastService', () => {
       const req = http.expectOne({
         method: 'GET',
         url:
-          'https://www.googleapis.com/youtube/v3/liveBroadcasts?part=snippet&broadcastStatus=all'
+          'https://www.googleapis.com/youtube/v3/liveBroadcasts?part=snippet&broadcastStatus=all&broadcastType=all'
       });
       req.flush(mockData);
     });
@@ -79,7 +79,7 @@ describe('BroadcastService', () => {
         items: []
       };
 
-      service.selectBroadcastCat(1);
+      service.selectBroadcastChat(1);
       expect(service.liveChatId).toBe(1);
 
       service.getBroadcastChat().subscribe(value => {
@@ -90,7 +90,7 @@ describe('BroadcastService', () => {
       const req = http.expectOne({
         method: 'GET',
         url:
-          'https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=1&part=snippet'
+          'https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=1&part=authorDetails,snippet'
       });
       req.flush(mockData);
     });

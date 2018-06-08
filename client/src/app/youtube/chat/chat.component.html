@@ -1,3 +1,19 @@
 <p>
   chat works!
 </p>
+<h2>頻道選擇</h2>
+<ul>
+  <li *ngFor="let event of (events$ | async)?.items">
+    <button (click)="setLiveChatId(event.snippet.liveChatId)">
+      get chat messages
+    </button>
+    {{ event | json }}
+  </li>
+</ul>
+
+<h2>聊天訊息</h2>
+<ul>
+  <li *ngFor="let message of messages$?.items">
+    {{ message | json }}
+  </li>
+</ul>
