@@ -15,6 +15,7 @@ export class LoginComponent implements OnInit {
 
   signInWithSocial(loginProvider) {
     this.authService.signInWithSocial(loginProvider).subscribe(value => {
+      this.authService.accessToken$.next(value.credential.accessToken);
       this.router.navigate(['/main/remote']);
     });
   }
