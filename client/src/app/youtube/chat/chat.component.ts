@@ -12,16 +12,12 @@ import { Observable } from 'rxjs';
 export class ChatComponent implements OnInit {
   events$: Observable<any> = this.broadcastSerivce.getBroadcastList('active');
 
-  messages$ = null;
+  messages$ = this.broadcastSerivce.messages$;
   constructor(private broadcastSerivce: BroadcastService) {}
 
   ngOnInit() {}
 
   setLiveChatId(id) {
-    console.log(id);
-    this.broadcastSerivce.selectBroadcastChat(id);
-    this.broadcastSerivce
-      .getBroadcastChat()
-      .subscribe(messages => (this.messages$ = messages));
+    this.broadcastSerivce.startWatchBroadcastChat(id).subscribe();
   }
 }

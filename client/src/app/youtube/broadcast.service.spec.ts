@@ -79,11 +79,9 @@ describe('BroadcastService', () => {
         items: []
       };
 
-      service.selectBroadcastChat(1);
-      expect(service.liveChatId).toBe(1);
-
-      service.getBroadcastChat().subscribe(value => {
-        expect(service.pollingIntervalMillis).toBe(500);
+      service.startWatchBroadcastChat(1).subscribe(value => {
+        expect(service.liveChatId).toBe(1);
+        expect(service.pollingIntervalMillis$).toBe(500);
         expect(value).toEqual(expectResult);
       });
 
