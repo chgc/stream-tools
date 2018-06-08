@@ -17,11 +17,19 @@ export class TokenInterceptor implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    request = request.clone({
-      setHeaders: {
-        Authorization: `Bearer ${this.authService.idToken}`
-      }
-    });
+    if (request.url.includes('https://www.googleapis.com/youtube')) {
+      request = request.clone({
+        setHeaders: {
+          Authorization: `Bearer ${this.authService.accessToken$.value}`
+        }
+      });
+    } else {
+      request = request.clone({
+        setHeaders: {
+          Authorization: `Bearer ${this.authService.idToken}`
+        }
+      });
+    }
     return next.handle(request);
   }
 }

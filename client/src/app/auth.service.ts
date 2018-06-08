@@ -41,7 +41,7 @@ export class AuthService {
     switch (loginProvider) {
       case 'google':
         provider = new firebase.auth.GoogleAuthProvider().addScope(
-          'https://www.googleapis.com/auth/youtube'
+          `https://www.googleapis.com/auth/youtube`
         );
         break;
       case 'github':

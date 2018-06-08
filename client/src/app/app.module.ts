@@ -28,7 +28,11 @@ const routes: Route[] = [
         path: 'caption',
         loadChildren: './caption/caption.module#CaptionModule'
       },
-      { path: 'remote', loadChildren: './remote/remote.module#RemoteModule' }
+      { path: 'remote', loadChildren: './remote/remote.module#RemoteModule' },
+      {
+        path: 'youtube',
+        loadChildren: './youtube/youtube.module#YoutubeModule'
+      }
     ]
   },
   { path: '**', redirectTo: '/main/remote', pathMatch: 'full' }
