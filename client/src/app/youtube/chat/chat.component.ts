@@ -8,15 +8,7 @@ import { AuthService } from '../../auth.service';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor() {}
 
-  ngOnInit() {
-    this.http
-      .get(
-        'https://www.googleapis.com/youtube/v3/liveBroadcasts?part=snippet&broadcastStatus=all'
-      )
-      .subscribe(value => {
-        console.log(value);
-      });
-  }
+  ngOnInit() {}
 }
