@@ -20,4 +20,11 @@ export class ChatComponent implements OnInit {
   setLiveChatId(id) {
     this.broadcastSerivce.startWatchBroadcastChat(id).subscribe();
   }
+  stop() {
+    this.broadcastSerivce.stopWatchBroadcastChat();
+  }
+
+  mesageTrackByFn(index, item) {
+    return item.id;
+  }
 }

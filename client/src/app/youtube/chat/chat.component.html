@@ -7,13 +7,14 @@
     <button (click)="setLiveChatId(event.snippet.liveChatId)">
       get chat messages
     </button>
-    {{ event | json }}
+    {{ event.snippet.title | json }}
   </li>
 </ul>
+<button (click)="stop()">Stop watching chat</button>
 
 <h2>聊天訊息</h2>
 <ul>
-  <li *ngFor="let message of messages$?.items">
-    {{ message | json }}
+  <li *ngFor="let message of messages$ | async; trackBy: mesageTrackByFn">
+    {{ message.displayName }} - {{ message.displayMessage }}
   </li>
 </ul>

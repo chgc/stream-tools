@@ -11,6 +11,9 @@ import {
   tap,
   toArray
 } from 'rxjs/operators';
+import { LiveChatMessageListResponse } from './models/liveChatMessageListResponse';
+import { DisplayMessage } from './models/displayMessage';
+import { LiveChatMessage } from './models/liveChatMessage';
 
 type broadcastStatus = 'all' | 'active' | 'completed' | 'upcoming';
 
@@ -18,48 +21,62 @@ type broadcastStatus = 'all' | 'active' | 'completed' | 'upcoming';
   providedIn: 'root'
 })
 export class BroadcastService {
-  liveChatId;
+  liveChatId$ = new BehaviorSubject<string>('');
   pollingIntervalMillis$ = new BehaviorSubject<number>(0);
   stop$ = new Subject();
-
-  queryLiveChat$ = this.http
-    .get(
-      `https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=${
-        this.liveChatId
-      }&part=authorDetails,snippet`
-    )
-    .pipe(
-      tap((result: any) => {
-        if (
-          this.pollingIntervalMillis$.value !== result.pollingIntervalMillis
-        ) {
-          this.pollingIntervalMillis$.next(result.pollingIntervalMillis);
-        }
-      })
-    );
 
   messages$ = this.pollingIntervalMillis$.pipe(
     filter(time => time > 0),
     switchMap(time => timer(time, time).pipe(takeUntil(this.stop$))),
-    exhaustMap(() =>
-      this.queryLiveChat$.pipe(map((result: any) => result.items))
-    ),
-    mergeMap((messages: any) => from(messages)),
-    tap(this.handleMessageAction.bind(this)),
-    toArray()
+    exhaustMap(() => this.queryLiveChat().pipe(map(result => result.items))),
+    map(this.handleMessageAction.bind(this))
   );
 
-  handleMessageAction(message) {
-    if ('textMessageDetails' in message) {
-      this.handleTestMessageDetails(message);
-    }
-    if ('superChatDetails' in message) {
-      this.handleSuperChatDetails(message);
-    }
+  queryLiveChat() {
+    return this.http
+      .get<LiveChatMessageListResponse>(
+        `https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=${
+          this.liveChatId$.value
+        }&part=authorDetails,snippet`
+      )
+      .pipe(
+        tap(result => {
+          if (
+            this.pollingIntervalMillis$.value !== result.pollingIntervalMillis
+          ) {
+            this.pollingIntervalMillis$.next(result.pollingIntervalMillis);
+          }
+        })
+      );
   }
 
-  handleTestMessageDetails(message) {}
-  handleSuperChatDetails(message) {}
+  handleMessageAction(messages: LiveChatMessage[]) {
+    return messages.map(message => {
+      if ('textMessageDetails' in message.snippet) {
+        return this.handleTextMessageDetails(message);
+      }
+      if ('superChatDetails' in message.snippet) {
+        return this.handleSuperChatDetails(message);
+      }
+    });
+  }
+
+  handleTextMessageDetails(message: LiveChatMessage): DisplayMessage {
+    // console.log('fromTextMessage', message);
+    return {
+      id: message.id,
+      displayName: message.authorDetails.displayName,
+      displayMessage: message.snippet.displayMessage
+    };
+  }
+  handleSuperChatDetails(message): DisplayMessage {
+    // console.log('fromSuperChat', message);
+    return {
+      id: message.id,
+      displayName: message.authorDetails.displayName,
+      displayMessage: message.snippet.displayMessage
+    };
+  }
 
   getBroadcastList(status: broadcastStatus): Observable<any> {
     return this.http.get(
@@ -67,9 +84,9 @@ export class BroadcastService {
     );
   }
 
-  startWatchBroadcastChat(id): Observable<any> {
-    this.liveChatId = id;
-    return this.queryLiveChat$;
+  startWatchBroadcastChat(id: string): Observable<any> {
+    this.liveChatId$.next(id);
+    return this.queryLiveChat();
   }
 
   stopWatchBroadcastChat() {
