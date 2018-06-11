@@ -1,29 +1,35 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, Observable, Subject, timer } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, timer } from 'rxjs';
 import {
   exhaustMap,
   filter,
   map,
-  mergeMap,
   switchMap,
   takeUntil,
-  tap,
-  toArray
+  tap
 } from 'rxjs/operators';
-import { LiveChatMessageListResponse } from './models/liveChatMessageListResponse';
 import { DisplayMessage } from './models/displayMessage';
 import { LiveChatMessage } from './models/liveChatMessage';
+import { LiveChatMessageListResponse } from './models/liveChatMessageListResponse';
+import { PrizeDrawService } from './prize-draw.service';
 
 type broadcastStatus = 'all' | 'active' | 'completed' | 'upcoming';
+
+export const YoutubeStreamAPI = {
+  liveBroadcastsUrl: status =>
+    `https://www.googleapis.com/youtube/v3/liveBroadcasts?part=snippet&broadcastStatus=${status}&broadcastType=all`,
+  messagesUrl: id =>
+    `https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=${id}&part=authorDetails,snippet`
+};
 
 @Injectable({
   providedIn: 'root'
 })
 export class BroadcastService {
-  liveChatId$ = new BehaviorSubject<string>('');
-  pollingIntervalMillis$ = new BehaviorSubject<number>(0);
-  stop$ = new Subject();
+  private liveChatId$ = new BehaviorSubject<string>('');
+  private pollingIntervalMillis$ = new BehaviorSubject<number>(0);
+  private stop$ = new Subject();
 
   messages$ = this.pollingIntervalMillis$.pipe(
     filter(time => time > 0),
@@ -32,12 +38,23 @@ export class BroadcastService {
     map(this.handleMessageAction.bind(this))
   );
 
-  queryLiveChat() {
+  startWatchBroadcastChat(id: string): Observable<LiveChatMessageListResponse> {
+    this.liveChatId$.next(id);
+    return this.queryLiveChat();
+  }
+
+  stopWatchBroadcastChat() {
+    this.stop$.next();
+  }
+
+  getBroadcastList(status: broadcastStatus): Observable<any> {
+    return this.http.get(YoutubeStreamAPI.liveBroadcastsUrl(status));
+  }
+
+  private queryLiveChat() {
     return this.http
       .get<LiveChatMessageListResponse>(
-        `https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=${
-          this.liveChatId$.value
-        }&part=authorDetails,snippet`
+        YoutubeStreamAPI.messagesUrl(this.liveChatId$.value)
       )
       .pipe(
         tap(result => {
@@ -50,7 +67,7 @@ export class BroadcastService {
       );
   }
 
-  handleMessageAction(messages: LiveChatMessage[]) {
+  private handleMessageAction(messages: LiveChatMessage[]) {
     return messages.map(message => {
       if ('textMessageDetails' in message.snippet) {
         return this.handleTextMessageDetails(message);
@@ -61,15 +78,19 @@ export class BroadcastService {
     });
   }
 
-  handleTextMessageDetails(message: LiveChatMessage): DisplayMessage {
+  private handleTextMessageDetails(message: LiveChatMessage): DisplayMessage {
     // console.log('fromTextMessage', message);
+    this.prizeDrawService.receiveMessage$.next({
+      message: message.snippet.displayMessage,
+      author: message.authorDetails.displayName
+    });
     return {
       id: message.id,
       displayName: message.authorDetails.displayName,
       displayMessage: message.snippet.displayMessage
     };
   }
-  handleSuperChatDetails(message): DisplayMessage {
+  private handleSuperChatDetails(message): DisplayMessage {
     // console.log('fromSuperChat', message);
     return {
       id: message.id,
@@ -78,20 +99,8 @@ export class BroadcastService {
     };
   }
 
-  getBroadcastList(status: broadcastStatus): Observable<any> {
-    return this.http.get(
-      `https://www.googleapis.com/youtube/v3/liveBroadcasts?part=snippet&broadcastStatus=${status}&broadcastType=all`
-    );
-  }
-
-  startWatchBroadcastChat(id: string): Observable<any> {
-    this.liveChatId$.next(id);
-    return this.queryLiveChat();
-  }
-
-  stopWatchBroadcastChat() {
-    this.stop$.next();
-  }
-
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private prizeDrawService: PrizeDrawService
+  ) {}
 }
