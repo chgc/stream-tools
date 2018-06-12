@@ -35,7 +35,7 @@ export class BroadcastService {
     filter(time => time > 0),
     switchMap(time => timer(time, time).pipe(takeUntil(this.stop$))),
     exhaustMap(() => this.queryLiveChat().pipe(map(result => result.items))),
-    map(this.handleMessageAction.bind(this))
+    map(this.processMessages.bind(this))
   );
 
   startWatchBroadcastChat(id: string): Observable<LiveChatMessageListResponse> {
@@ -58,45 +58,46 @@ export class BroadcastService {
       )
       .pipe(
         tap(result => {
-          if (
-            this.pollingIntervalMillis$.value !== result.pollingIntervalMillis
-          ) {
+          const isDiffPollingInterval =
+            this.pollingIntervalMillis$.value !== result.pollingIntervalMillis;
+          if (isDiffPollingInterval) {
             this.pollingIntervalMillis$.next(result.pollingIntervalMillis);
           }
         })
       );
   }
 
-  private handleMessageAction(messages: LiveChatMessage[]) {
-    return messages.map(message => {
-      if ('textMessageDetails' in message.snippet) {
-        return this.handleTextMessageDetails(message);
+  private processMessages(messages: LiveChatMessage[]): DisplayMessage[] {
+    const chatHandler = message => {
+      switch (message.snippet.type) {
+        case 'textMessageEvent':
+          return this.processTextMessageDetails(message);
+        case 'superChatEvent':
+          return this.processSuperChatDetails(message);
       }
-      if ('superChatDetails' in message.snippet) {
-        return this.handleSuperChatDetails(message);
-      }
+    };
+
+    const transformMessage = message => ({
+      id: message.id,
+      displayName: message.authorDetails.displayName,
+      displayMessage: message.snippet.displayMessage
     });
+
+    return messages.map(message => transformMessage(chatHandler(message)));
   }
 
-  private handleTextMessageDetails(message: LiveChatMessage): DisplayMessage {
+  private processTextMessageDetails(message: LiveChatMessage): LiveChatMessage {
     // console.log('fromTextMessage', message);
     this.prizeDrawService.receiveMessage$.next({
       message: message.snippet.displayMessage,
-      author: message.authorDetails.displayName
+      author: message.authorDetails.displayName,
+      isChatOwner: message.authorDetails.isChatOwner
     });
-    return {
-      id: message.id,
-      displayName: message.authorDetails.displayName,
-      displayMessage: message.snippet.displayMessage
-    };
+    return message;
   }
-  private handleSuperChatDetails(message): DisplayMessage {
+  private processSuperChatDetails(message): LiveChatMessage {
     // console.log('fromSuperChat', message);
-    return {
-      id: message.id,
-      displayName: message.authorDetails.displayName,
-      displayMessage: message.snippet.displayMessage
-    };
+    return message;
   }
 
   constructor(

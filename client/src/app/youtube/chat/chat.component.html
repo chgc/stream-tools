@@ -18,3 +18,18 @@
     {{ message.displayName }} - {{ message.displayMessage }}
   </li>
 </ul>
+
+<hr />
+<div *ngIf="isStart">
+  <h2>抽獎</h2>
+  <label>通關密碼</label>
+  <input type="text" #keyword/>
+  <button (click)="startPrizeDraw(keyword.value)">Start</button>
+  <button (click)="stopPrizeDraw()">Stop</button>
+  <ul>
+    <li *ngFor="let winner of winnerList$ | async">
+      {{ winner }}
+    </li>
+  </ul>
+  <button (click)="drawWinner(1)">drawWinner</button>
+</div>
