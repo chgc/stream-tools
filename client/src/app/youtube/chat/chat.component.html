@@ -1,6 +1,3 @@
-<p>
-  chat works!
-</p>
 <h2>頻道選擇</h2>
 <ul>
   <li *ngFor="let event of (events$ | async)?.items">
@@ -20,16 +17,33 @@
 </ul>
 
 <hr />
-<div *ngIf="isStart">
-  <h2>抽獎</h2>
-  <label>通關密碼</label>
+<div>
+  <h2>活動抽獎</h2>
+  <label>通關密語</label>
   <input type="text" #keyword/>
-  <button (click)="startPrizeDraw(keyword.value)">Start</button>
-  <button (click)="stopPrizeDraw()">Stop</button>
+  <button (click)="startPrizeDraw(keyword.value)" *ngIf="!isEventStart">開始</button>
+  <button (click)="stopPrizeDraw()" *ngIf="isEventStart">結束</button>
+  <p>
+    <span *ngIf="startTime">
+      開始時間: {{ startTime | date: 'yyyy/MM/dd h:mm a' }}
+    </span>
+    <span *ngIf="endTime">
+      ~ 結束時間: {{ endTime | date: 'yyyy/MM/dd h:mm a' }}</span>
+  </p>
   <ul>
     <li *ngFor="let winner of winnerList$ | async">
       {{ winner }}
     </li>
   </ul>
-  <button (click)="drawWinner(1)">drawWinner</button>
+  <div *ngIf="endTime">
+    <input type="number" #numberOfwinners placeholder="幾位贏家" value="1" />
+    <button (click)="drawWinner(numberOfwinners.value)">抽獎</button>
+    <h2>中獎名單</h2>
+    <ul>
+      <li *ngFor="let winner of winners">
+        {{ winner }}
+      </li>
+    </ul>
+    <button (click)="saveResult()">儲存</button>
+  </div>
 </div>

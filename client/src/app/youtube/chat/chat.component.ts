@@ -14,8 +14,13 @@ export class ChatComponent implements OnInit {
   events$: Observable<any> = this.broadcastSerivce.getBroadcastList('active');
 
   messages$ = this.broadcastSerivce.messages$;
-  isStart = false;
+  isCapturingMessage = false;
+  keyword = '';
+  isEventStart = false;
+  startTime: Date;
+  endTime: Date;
   winnerList$ = this.prizeDrawService.nameList$;
+  winners = [];
 
   constructor(
     private broadcastSerivce: BroadcastService,
@@ -26,12 +31,12 @@ export class ChatComponent implements OnInit {
 
   setLiveChatId(id) {
     this.broadcastSerivce.startWatchBroadcastChat(id).subscribe(() => {
-      this.isStart = true;
+      this.isCapturingMessage = true;
     });
   }
   stop() {
     this.broadcastSerivce.stopWatchBroadcastChat();
-    this.isStart = false;
+    this.isCapturingMessage = false;
   }
 
   mesageTrackByFn(index, item) {
@@ -40,17 +45,26 @@ export class ChatComponent implements OnInit {
 
   startPrizeDraw(keyword) {
     if (!!keyword) {
-      console.log(keyword);
-      this.prizeDrawService.start(keyword);
+      this.keyword = keyword;
+      this.isEventStart = true;
+      this.startTime = new Date();
+      this.endTime = undefined;
+      this.prizeDrawService.start(keyword, this.startTime);
     }
   }
 
   stopPrizeDraw() {
-    this.prizeDrawService.stop();
+    this.isEventStart = false;
+    this.endTime = new Date();
+    this.prizeDrawService.stop(this.endTime);
   }
 
   drawWinner(numberOfWinner) {
-    const winner = this.prizeDrawService.drawWinner(numberOfWinner);
-    console.log('win', winner);
+    this.winners = this.prizeDrawService.drawWinner(numberOfWinner);
+    console.log('win', this.winners);
+  }
+
+  saveResult() {
+    this.prizeDrawService.saveWinner();
   }
 }

@@ -19,7 +19,9 @@ export class PrizeDrawService {
   private nameList = [];
   nameList$ = new BehaviorSubject([]);
   keyword: string;
-
+  startTime: Date;
+  endTime: Date;
+  winners = [];
   receiveMessage$ = new Subject();
   private stop$ = new Subject();
   private possibleWinnerList$ = this.receiveMessage$.pipe(
@@ -35,32 +37,49 @@ export class PrizeDrawService {
 
   constructor() {}
 
-  start(keyword: string) {
+  start(keyword: string, startTime) {
     this.nameList = [];
+    this.startTime = startTime;
     this.keyword = keyword;
     this.nameList$.next([]);
     this.possibleWinnerList$.subscribe(list => (this.nameList = list));
   }
 
-  stop() {
+  stop(endDate) {
     this.stop$.next();
+    this.endTime = endDate;
   }
 
   drawWinner(numberofWinner: number = 1) {
-    return this.nameList
-      .sort((a, b) => (Math.random() > 0.5 ? -1 : 1))
+    this.winners = this.nameList
       .slice()
+      .sort((a, b) => (Math.random() > 0.5 ? -1 : 1))
       .splice(0, numberofWinner);
+    return this.winners;
   }
 
-  private enableJoinPrizeList(message, author, nameList) {
-    return (
-      message && message.includes(this.keyword) && !nameList.includes(author)
+  saveWinner() {
+    // TODO: Save winner to DB
+    console.log(
+      this.keyword,
+      this.startTime,
+      this.endTime,
+      this.nameList$.getValue(),
+      this.winners
     );
   }
 
-  private determineJoinList({ message, author, isChatOwner }) {
-    return this.enableJoinPrizeList(message, author, this.nameList)
+  private enableJoinPrizeList(publishedAt, message, author, nameList) {
+    return (
+      message &&
+      message.includes(this.keyword) &&
+      !nameList.includes(author) &&
+      publishedAt >= this.startTime
+    );
+  }
+
+  private determineJoinList({ publishedAt, message, author, isChatOwner }) {
+    return this.enableJoinPrizeList(publishedAt, message, author, this.nameList)
       ? author
       : '';
   }

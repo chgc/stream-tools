@@ -1,18 +1,20 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, timer } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, timer, empty } from 'rxjs';
 import {
   exhaustMap,
   filter,
   map,
   switchMap,
   takeUntil,
-  tap
+  tap,
+  catchError
 } from 'rxjs/operators';
 import { DisplayMessage } from './models/displayMessage';
 import { LiveChatMessage } from './models/liveChatMessage';
 import { LiveChatMessageListResponse } from './models/liveChatMessageListResponse';
 import { PrizeDrawService } from './prize-draw.service';
+import { AuthService } from '../auth.service';
 
 type broadcastStatus = 'all' | 'active' | 'completed' | 'upcoming';
 
@@ -48,7 +50,14 @@ export class BroadcastService {
   }
 
   getBroadcastList(status: broadcastStatus): Observable<any> {
-    return this.http.get(YoutubeStreamAPI.liveBroadcastsUrl(status));
+    return this.http.get(YoutubeStreamAPI.liveBroadcastsUrl(status)).pipe(
+      catchError(err => {
+        if (err.status === 401) {
+          this.authService.signOut();
+        }
+        return empty();
+      })
+    );
   }
 
   private queryLiveChat() {
@@ -89,6 +98,7 @@ export class BroadcastService {
   private processTextMessageDetails(message: LiveChatMessage): LiveChatMessage {
     // console.log('fromTextMessage', message);
     this.prizeDrawService.receiveMessage$.next({
+      publishedAt: new Date(message.snippet.publishedAt),
       message: message.snippet.displayMessage,
       author: message.authorDetails.displayName,
       isChatOwner: message.authorDetails.isChatOwner
@@ -102,6 +112,7 @@ export class BroadcastService {
 
   constructor(
     private http: HttpClient,
+    private authService: AuthService,
     private prizeDrawService: PrizeDrawService
   ) {}
 }
