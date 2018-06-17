@@ -66,6 +66,9 @@ export class ChatComponent implements OnInit {
     console.log('win', this.winners);
   }
 
+  resetResult() {
+    this.winners = this.prizeDrawService.resetWinner();
+  }
   saveResult() {
     this.prizeDrawService.saveWinner(this.eventTitle);
   }

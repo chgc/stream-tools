@@ -53,7 +53,10 @@ export class PrizeDrawService {
     ];
     return this.winners;
   }
-
+  resetWinner() {
+    this.winners = [];
+    return this.winners;
+  }
   saveWinner(eventTitle) {
     // TODO: Save winner to DB
     const prizeHistory = {
