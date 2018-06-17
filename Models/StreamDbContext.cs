@@ -4,13 +4,14 @@ using stream_tools.Models;
 
 namespace stream_tools
 {
-  public class StreamDbContext : IdentityDbContext<ApplicationUser>
+    public class StreamDbContext : IdentityDbContext<ApplicationUser>
 
-  {
-    public StreamDbContext(DbContextOptions<StreamDbContext> options) : base(options) { }
+    {
+        public StreamDbContext(DbContextOptions<StreamDbContext> options) : base(options) { }
 
-    public DbSet<Caption> Captions { get; set; }
-    public DbSet<EnvSetting> EnvSettings { get; set; }
-    public DbSet<ConnectionInfo> ConnectionInfos { get; set; }
-  }
+        public DbSet<Caption> Captions { get; set; }
+        public DbSet<EnvSetting> EnvSettings { get; set; }
+        public DbSet<ConnectionInfo> ConnectionInfos { get; set; }
+        public DbSet<PrizeDrawHistory> PrizeDrawHistory { get; set; }
+    }
 }
