@@ -16,6 +16,7 @@ export class ChatComponent implements OnInit {
   messages$ = this.broadcastSerivce.messages$;
   isCapturingMessage = false;
   keyword = '';
+  eventTitle = '';
   isEventStart = false;
   startTime: Date;
   endTime: Date;
@@ -29,9 +30,10 @@ export class ChatComponent implements OnInit {
 
   ngOnInit() {}
 
-  setLiveChatId(id) {
+  setLiveChatId(id, title) {
     this.broadcastSerivce.startWatchBroadcastChat(id).subscribe(() => {
       this.isCapturingMessage = true;
+      this.eventTitle = title;
     });
   }
   stop() {
@@ -59,12 +61,12 @@ export class ChatComponent implements OnInit {
     this.prizeDrawService.stop(this.endTime);
   }
 
-  drawWinner(numberOfWinner) {
-    this.winners = this.prizeDrawService.drawWinner(numberOfWinner);
+  drawWinner(numberOfWinner, prizeItem) {
+    this.winners = this.prizeDrawService.drawWinner(numberOfWinner, prizeItem);
     console.log('win', this.winners);
   }
 
   saveResult() {
-    this.prizeDrawService.saveWinner();
+    this.prizeDrawService.saveWinner(this.eventTitle);
   }
 }

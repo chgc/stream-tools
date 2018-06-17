@@ -1,7 +1,7 @@
 <h2>頻道選擇</h2>
 <ul>
   <li *ngFor="let event of (events$ | async)?.items">
-    <button (click)="setLiveChatId(event.snippet.liveChatId)">
+    <button (click)="setLiveChatId(event.snippet.liveChatId, event.snippet.title)">
       get chat messages
     </button>
     {{ event.snippet.title | json }}
@@ -37,11 +37,12 @@
   </ul>
   <div *ngIf="endTime">
     <input type="number" #numberOfwinners placeholder="幾位贏家" value="1" />
-    <button (click)="drawWinner(numberOfwinners.value)">抽獎</button>
+    <input type="text" #prizeItem placeholder="獎項" value="" />
+    <button (click)="drawWinner(numberOfwinners.value, prizeItem.value)">抽獎</button>
     <h2>中獎名單</h2>
     <ul>
       <li *ngFor="let winner of winners">
-        {{ winner }}
+        {{ winner.prize }} - {{ winner.winner }}
       </li>
     </ul>
     <button (click)="saveResult()">儲存</button>

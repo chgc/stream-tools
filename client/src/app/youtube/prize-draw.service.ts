@@ -1,16 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subject, Subscription, BehaviorSubject, combineLatest } from 'rxjs';
-import {
-  filter,
-  map,
-  scan,
-  takeUntil,
-  tap,
-  finalize,
-  endWith,
-  shareReplay,
-  startWith
-} from 'rxjs/operators';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { filter, map, scan, startWith, takeUntil, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -35,7 +26,7 @@ export class PrizeDrawService {
     tap(list => this.nameList$.next(list))
   );
 
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
   start(keyword: string, startTime) {
     this.nameList = [];
@@ -50,16 +41,27 @@ export class PrizeDrawService {
     this.endTime = endDate;
   }
 
-  drawWinner(numberofWinner: number = 1) {
+  drawWinner(numberofWinner: number = 1, prizeItem: string) {
     this.winners = this.nameList
       .slice()
       .sort((a, b) => (Math.random() > 0.5 ? -1 : 1))
-      .splice(0, numberofWinner);
+      .splice(0, numberofWinner)
+      .map(winner => ({ winner: winner, prize: prizeItem }));
     return this.winners;
   }
 
-  saveWinner() {
+  saveWinner(eventTitle) {
     // TODO: Save winner to DB
+    const prizeHistory = {
+      eventTitle: eventTitle,
+      startTime: this.startTime,
+      endTime: this.endTime,
+      keyword: this.keyword,
+      joinPlayers: this.nameList$.getValue().join(';'),
+      prizeDetails: this.winners
+    };
+
+    this.http.post('api/prize/create', prizeHistory).subscribe();
     console.log(
       this.keyword,
       this.startTime,
