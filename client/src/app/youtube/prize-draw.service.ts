@@ -42,11 +42,15 @@ export class PrizeDrawService {
   }
 
   drawWinner(numberofWinner: number = 1, prizeItem: string) {
-    this.winners = this.nameList
-      .slice()
-      .sort((a, b) => (Math.random() > 0.5 ? -1 : 1))
-      .splice(0, numberofWinner)
-      .map(winner => ({ winner: winner, prize: prizeItem }));
+    this.winners = [
+      ...this.winners,
+      this.nameList
+        .slice()
+        .filter(user => this.winners.findIndex(x => x.winner === user) === -1)
+        .sort((a, b) => (Math.random() > 0.5 ? -1 : 1))
+        .splice(0, numberofWinner)
+        .map(winner => ({ winner: winner, prize: prizeItem }))
+    ];
     return this.winners;
   }
 
@@ -62,13 +66,6 @@ export class PrizeDrawService {
     };
 
     this.http.post('api/prize/create', prizeHistory).subscribe();
-    console.log(
-      this.keyword,
-      this.startTime,
-      this.endTime,
-      this.nameList$.getValue(),
-      this.winners
-    );
   }
 
   private enableJoinPrizeList(publishedAt, message, author, nameList) {
