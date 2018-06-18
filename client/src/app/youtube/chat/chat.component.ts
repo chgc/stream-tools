@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../auth.service';
-import { BroadcastService } from '../broadcast.service';
 import { Observable } from 'rxjs';
+import { BroadcastService } from '../broadcast.service';
+import { GameInfo } from '../models/GameInfo';
 import { PrizeDrawService } from '../prize-draw.service';
 
 @Component({
@@ -15,13 +14,10 @@ export class ChatComponent implements OnInit {
 
   messages$ = this.broadcastSerivce.messages$;
   isCapturingMessage = false;
-  keyword = '';
   eventTitle = '';
   isEventStart = false;
-  startTime: Date;
-  endTime: Date;
+  gameInfo: GameInfo;
   winnerList$ = this.prizeDrawService.nameList$;
-  winners = [];
 
   constructor(
     private broadcastSerivce: BroadcastService,
@@ -47,27 +43,24 @@ export class ChatComponent implements OnInit {
 
   startPrizeDraw(keyword) {
     if (!!keyword) {
-      this.keyword = keyword;
+      this.prizeDrawService.start(this.eventTitle, keyword, new Date());
       this.isEventStart = true;
-      this.startTime = new Date();
-      this.endTime = undefined;
-      this.prizeDrawService.start(keyword, this.startTime);
+      this.gameInfo = this.prizeDrawService.gameInfo;
     }
   }
 
   stopPrizeDraw() {
     this.isEventStart = false;
-    this.endTime = new Date();
-    this.prizeDrawService.stop(this.endTime);
+    this.prizeDrawService.stop(new Date());
   }
 
   drawWinner(numberOfWinner, prizeItem) {
-    this.winners = this.prizeDrawService.drawWinner(numberOfWinner, prizeItem);
-    console.log('win', this.winners);
+    this.prizeDrawService.drawWinner(numberOfWinner, prizeItem);
+    console.log('win', this.gameInfo.winners);
   }
 
   resetResult() {
-    this.winners = this.prizeDrawService.resetWinner();
+    this.prizeDrawService.resetWinner();
   }
   saveResult() {
     this.prizeDrawService.saveWinner(this.eventTitle);
