@@ -11,6 +11,7 @@ import { filter, map, scan, startWith, takeUntil, tap } from 'rxjs/operators';
 export class PrizeDrawService {
   nameList$ = new BehaviorSubject([]);
   gameInfo: GameInfo;
+  isEventStart: boolean;
   receiveMessage$ = new Subject();
   private stop$ = new Subject();
   private possibleWinnerList$ = this.receiveMessage$.pipe(
@@ -28,11 +29,13 @@ export class PrizeDrawService {
 
   start(eventTitle: string, keyword: string, startTime) {
     this.resetGame(eventTitle, keyword, startTime);
+    this.isEventStart = true;
     this.possibleWinnerList$.subscribe(list => (this.gameInfo.nameList = list));
   }
 
   stop(endDate) {
     this.stop$.next();
+    this.isEventStart = false;
     this.gameInfo.endTime = endDate;
   }
 

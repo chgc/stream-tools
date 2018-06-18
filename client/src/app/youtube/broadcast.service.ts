@@ -33,6 +33,9 @@ export class BroadcastService {
   private pollingIntervalMillis$ = new BehaviorSubject<number>(0);
   private stop$ = new Subject();
 
+  isCapturingMessage = new BehaviorSubject(false);
+  eventTitle = new BehaviorSubject('');
+
   messages$ = this.pollingIntervalMillis$.pipe(
     filter(time => time > 0),
     switchMap(time => timer(time, time).pipe(takeUntil(this.stop$))),
@@ -40,13 +43,19 @@ export class BroadcastService {
     map(this.processMessages.bind(this))
   );
 
-  startWatchBroadcastChat(id: string): Observable<LiveChatMessageListResponse> {
+  startWatchBroadcastChat(
+    id: string,
+    eventTitle: string
+  ): Observable<LiveChatMessageListResponse> {
     this.liveChatId$.next(id);
+    this.isCapturingMessage.next(true);
+    this.eventTitle.next(eventTitle);
     return this.queryLiveChat();
   }
 
   stopWatchBroadcastChat() {
     this.stop$.next();
+    this.isCapturingMessage.next(false);
   }
 
   getBroadcastList(status: broadcastStatus): Observable<any> {
