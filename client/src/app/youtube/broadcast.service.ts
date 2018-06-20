@@ -69,7 +69,7 @@ export class BroadcastService {
     );
   }
 
-  private queryLiveChat() {
+  queryLiveChat() {
     return this.http
       .get<LiveChatMessageListResponse>(
         YoutubeStreamAPI.messagesUrl(this.liveChatId$.value)
@@ -100,7 +100,7 @@ export class BroadcastService {
       displayName: message.authorDetails.displayName,
       displayMessage: message.snippet.displayMessage
     });
-
+    console.log(messages);
     return messages.map(message => transformMessage(chatHandler(message)));
   }
 
