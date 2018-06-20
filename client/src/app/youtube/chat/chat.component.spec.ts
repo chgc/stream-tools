@@ -17,7 +17,12 @@ describe('ChatComponent', () => {
     'stopWatchBroadcastChat'
   ]);
 
-  const prizeDrawSeriveSpy = jasmine.createSpyObj('PrizeDrawService', ['']);
+  const prizeDrawSeriveSpy = jasmine.createSpyObj('PrizeDrawService', [
+    'drawWinner',
+    'stop',
+    'start',
+    'saveWinner'
+  ]);
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -53,5 +58,25 @@ describe('ChatComponent', () => {
     component.stop();
     expect(broadcastServiceSpy.stopWatchBroadcastChat).toHaveBeenCalled();
     expect(component.isCapturingMessage).toBeFalsy();
+  });
+
+  it('should draw winner', () => {
+    component.drawWinner(1, 'item');
+    expect(prizeDrawSeriveSpy.drawWinner).toHaveBeenCalledWith(1, 'item');
+  });
+
+  it('should stop prize draw', () => {
+    component.stopPrizeDraw();
+    expect(prizeDrawSeriveSpy.stop).toHaveBeenCalled();
+  });
+
+  it('should start prize draw', () => {
+    component.startPrizeDraw('keyword');
+    expect(prizeDrawSeriveSpy.start).toHaveBeenCalled();
+  });
+
+  it('should save result', () => {
+    component.saveResult();
+    expect(prizeDrawSeriveSpy.saveWinner).toHaveBeenCalled();
   });
 });
