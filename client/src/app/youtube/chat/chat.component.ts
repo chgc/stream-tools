@@ -72,7 +72,6 @@ export class ChatComponent implements OnInit {
     this.prizes.value.forEach(({ numberOfWinner, prizeItem }) => {
       this.prizeDrawService.drawWinner(numberOfWinner, prizeItem);
     });
-    console.log('win', this.gameInfo.winners);
   }
 
   resetResult() {

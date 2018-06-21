@@ -1,20 +1,17 @@
 import {
-  TestBed,
-  inject,
-  fakeAsync,
-  tick,
-  discardPeriodicTasks
-} from '@angular/core/testing';
-import {
   HttpClientTestingModule,
   HttpTestingController
 } from '@angular/common/http/testing';
-import { BroadcastService } from './broadcast.service';
-import { AuthService } from '../auth.service';
-import { PrizeDrawService } from './prize-draw.service';
-import { TestScheduler } from 'rxjs/testing';
-import { tap } from 'rxjs/operators';
+import {
+  discardPeriodicTasks,
+  fakeAsync,
+  TestBed,
+  tick
+} from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
+import { AuthService } from '../auth.service';
+import { BroadcastService } from './broadcast.service';
+import { PrizeDrawService } from './prize-draw.service';
 
 describe('BroadcastService', () => {
   let http: HttpTestingController;
@@ -170,7 +167,6 @@ describe('BroadcastService', () => {
 
       service['pollingIntervalMillis$'].next(100);
       tick(100);
-
       discardPeriodicTasks();
     })
   );

@@ -2,33 +2,36 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChatComponent } from './chat.component';
 import { BroadcastService } from '../broadcast.service';
 import { PrizeDrawService } from '../prize-draw.service';
-import { of } from 'rxjs';
-import { ReactiveFormsModule } from '@angular/forms';
+import { of, BehaviorSubject } from 'rxjs';
+import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { TestScheduler } from 'rxjs/testing';
 
 describe('ChatComponent', () => {
   let component: ChatComponent;
   let fixture: ComponentFixture<ChatComponent>;
-  const broadcastServiceSpy = jasmine.createSpyObj('BroadcastService', [
-    'selectBroadcastChat',
-    'getBroadcastList',
-    'getBroadcastChat',
-    'startWatchBroadcastChat',
-    'stopWatchBroadcastChat'
-  ]);
+  let broadcastService;
+  const broadcastServiceMock = {
+    eventTitle: new BehaviorSubject(''),
+    selectBroadcastChat: () => {},
+    getBroadcastChat: () => {},
+    getBroadcastList: () => {},
+    startWatchBroadcastChat: () => {},
+    stopWatchBroadcastChat: () => {}
+  };
 
   const prizeDrawSeriveSpy = jasmine.createSpyObj('PrizeDrawService', [
     'drawWinner',
     'stop',
     'start',
-    'saveWinner'
+    'saveWinner',
+    'resetWinner'
   ]);
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ChatComponent],
       providers: [
-        { provide: BroadcastService, useValue: broadcastServiceSpy },
+        { provide: BroadcastService, useValue: broadcastServiceMock },
         { provide: PrizeDrawService, useValue: prizeDrawSeriveSpy }
       ],
       imports: [ReactiveFormsModule]
@@ -39,6 +42,7 @@ describe('ChatComponent', () => {
     fixture = TestBed.createComponent(ChatComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    broadcastService = TestBed.get(BroadcastService);
   });
 
   it('should create', () => {
@@ -46,23 +50,33 @@ describe('ChatComponent', () => {
   });
 
   it('should start watchBroadcastChat', () => {
-    broadcastServiceSpy.startWatchBroadcastChat.and.returnValue(of(''));
+    spyOn(broadcastService, 'startWatchBroadcastChat').and.returnValue(
+      of('event')
+    );
     component.setLiveChatId(1, 'test');
-    expect(broadcastServiceSpy.startWatchBroadcastChat).toHaveBeenCalledWith(
+    expect(broadcastService.startWatchBroadcastChat).toHaveBeenCalledWith(
       1,
       'test'
     );
   });
 
   it('should stop watch broadcast chat', () => {
+    spyOn(broadcastService, 'stopWatchBroadcastChat');
     component.stop();
-    expect(broadcastServiceSpy.stopWatchBroadcastChat).toHaveBeenCalled();
+    expect(broadcastService.stopWatchBroadcastChat).toHaveBeenCalled();
     expect(component.isCapturingMessage).toBeFalsy();
   });
 
   it('should draw winner', () => {
-    component.drawWinner(1, 'item');
-    expect(prizeDrawSeriveSpy.drawWinner).toHaveBeenCalledWith(1, 'item');
+    component.addPrize();
+    component.drawWinner();
+    expect(prizeDrawSeriveSpy.drawWinner).toHaveBeenCalledWith(1, '');
+  });
+
+  it('should remove prize', () => {
+    component.addPrize();
+    component.removePrize(0);
+    expect(component.prizes.length).toBe(0);
   });
 
   it('should stop prize draw', () => {
@@ -78,5 +92,10 @@ describe('ChatComponent', () => {
   it('should save result', () => {
     component.saveResult();
     expect(prizeDrawSeriveSpy.saveWinner).toHaveBeenCalled();
+  });
+
+  it('should reset winner list', () => {
+    component.resetResult();
+    expect(prizeDrawSeriveSpy.resetWinner).toHaveBeenCalled();
   });
 });
