@@ -55,9 +55,8 @@ export class PrizeDrawService {
     this.gameInfo.winners = [];
   }
   saveWinner(eventTitle) {
-    // TODO: Save winner to DB
     const prizeHistory = {
-      eventTitle: eventTitle,
+      eventTitle: this.gameInfo.eventTitle,
       startTime: this.gameInfo.startTime,
       endTime: this.gameInfo.endTime,
       keyword: this.gameInfo.keyword,
