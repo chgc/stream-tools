@@ -58,7 +58,7 @@ describe('PrizeDrawService', () => {
       spyOn(service['possibleWinnerList$'], 'subscribe');
       service.start('event', 'keyword', today);
       expect(service['resetGame']).toHaveBeenCalled();
-      expect(service.isEventStart).toBeTruthy();
+      expect(service.isEventStart$.getValue()).toBeTruthy();
       expect(service['possibleWinnerList$'].subscribe).toHaveBeenCalled();
     });
 
@@ -81,7 +81,7 @@ describe('PrizeDrawService', () => {
     const today = new Date('2017-01-01T00:00:00');
     service.start('event', 'keyword', today);
     service.stop(today);
-    expect(service.isEventStart).toBeFalsy();
+    expect(service.isEventStart$.getValue()).toBeFalsy();
     expect(service.gameInfo.endTime).toEqual(today);
   });
 

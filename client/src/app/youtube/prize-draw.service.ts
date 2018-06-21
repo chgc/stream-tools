@@ -9,9 +9,9 @@ import { filter, map, scan, startWith, takeUntil, tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class PrizeDrawService {
-  nameList$ = new BehaviorSubject([]);
   gameInfo: GameInfo;
-  isEventStart: boolean;
+  nameList$ = new BehaviorSubject([]);
+  isEventStart$ = new BehaviorSubject(false);
   receiveMessage$ = new Subject();
   private stop$ = new Subject();
   private possibleWinnerList$ = this.receiveMessage$.pipe(
@@ -19,9 +19,7 @@ export class PrizeDrawService {
     takeUntil(this.stop$),
     map(this.determineJoinList.bind(this)),
     filter(author => !!author),
-    scan((acc, curr: string) => {
-      return curr.length === 0 ? [] : [...acc, curr];
-    }, []),
+    scan((acc, curr: string) => [...acc, curr], []),
     tap(list => this.nameList$.next(list))
   );
 
@@ -29,13 +27,16 @@ export class PrizeDrawService {
 
   start(eventTitle: string, keyword: string, startTime) {
     this.resetGame(eventTitle, keyword, startTime);
-    this.isEventStart = true;
-    this.possibleWinnerList$.subscribe(list => (this.gameInfo.nameList = list));
+    this.isEventStart$.next(true);
+    this.possibleWinnerList$.subscribe(list => {
+      console.log(list);
+      this.gameInfo.nameList = list;
+    });
   }
 
   stop(endDate) {
     this.stop$.next();
-    this.isEventStart = false;
+    this.isEventStart$.next(false);
     this.gameInfo.endTime = endDate;
   }
 
@@ -54,7 +55,7 @@ export class PrizeDrawService {
   resetWinner(): void {
     this.gameInfo.winners = [];
   }
-  saveWinner(eventTitle) {
+  saveWinner() {
     const prizeHistory = {
       eventTitle: this.gameInfo.eventTitle,
       startTime: this.gameInfo.startTime,

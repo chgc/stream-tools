@@ -33,9 +33,9 @@
     <button (click)="addPrize()">新增獎項</button>
   </form>
   <label>通關密語</label>
-  <input type="text" #keyword/>
-  <button (click)="startPrizeDraw(keyword.value)" *ngIf="!isEventStart">開始</button>
-  <button (click)="stopPrizeDraw()" *ngIf="isEventStart">結束</button>
+  <input type="text" #keyword/> {{ isEventStart | async }}
+  <button (click)="startPrizeDraw(keyword.value)" *ngIf="!(isEventStart | async)">開始</button>
+  <button (click)="stopPrizeDraw()" *ngIf="isEventStart | async">結束</button>
   <div *ngIf="gameInfo">
     <p>
       <span *ngIf="gameInfo.startTime">

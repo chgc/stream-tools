@@ -100,7 +100,6 @@ export class BroadcastService {
       displayName: message.authorDetails.displayName,
       displayMessage: message.snippet.displayMessage
     });
-    console.log(messages);
     return messages.map(message => transformMessage(chatHandler(message)));
   }
 

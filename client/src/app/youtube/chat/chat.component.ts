@@ -14,7 +14,7 @@ export class ChatComponent implements OnInit {
   events$: Observable<any> = this.broadcastSerivce.getBroadcastList('active');
 
   messages$ = this.broadcastSerivce.messages$;
-  isEventStart = this.prizeDrawService.isEventStart;
+  isEventStart = this.prizeDrawService.isEventStart$;
   gameInfo: GameInfo;
   winnerList$ = this.prizeDrawService.nameList$;
   game = this.fb.group({
@@ -78,6 +78,6 @@ export class ChatComponent implements OnInit {
     this.prizeDrawService.resetWinner();
   }
   saveResult() {
-    this.prizeDrawService.saveWinner(this.broadcastSerivce.eventTitle);
+    this.prizeDrawService.saveWinner();
   }
 }
