@@ -1,0 +1,9 @@
+.list {
+  overflow: scroll;
+  max-height: 60vh;
+  padding-right: 30px;
+}
+
+.mb15 {
+  margin-bottom: 15px;
+}

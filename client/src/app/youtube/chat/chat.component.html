@@ -1,64 +1,79 @@
-<h2>頻道選擇</h2>
-<ul>
-  <li *ngFor="let event of (events$ | async)?.items">
-    <button (click)="setLiveChatId(event.snippet.liveChatId, event.snippet.title)">
-      取得 {{ event.snippet.title }} 聊天訊息
-    </button>
-
-  </li>
-</ul>
-<div *ngIf="isCapturingMessage | async">
-  <button (click)="stop()">停止監看聊天訊息</button>
-  <h2>{{ eventTitle | async }} 聊天訊息</h2>
+<div class="container">
+  <h2>頻道選擇</h2>
   <ul>
-    <li *ngFor="let message of messages$ | async; trackBy: mesageTrackByFn">
-      {{ message.displayName }} - {{ message.displayMessage }}
+    <li *ngFor="let event of (events$ | async)?.items">
+      <button (click)="setLiveChatId(event.snippet.liveChatId, event.snippet.title)">
+        取得 {{ event.snippet.title }} 聊天訊息
+      </button>
+
     </li>
   </ul>
-</div>
-<hr />
-<div>
-  <h2>抽獎活動</h2>
-  <label>活動獎品</label>
-  <form [formGroup]="game">
-    <div formArrayName="prizes">
-      <div *ngFor="let prize of prizes.controls; index as i" [formGroupName]="i">
-        <label>獎品</label>
-        <input formControlName="prizeItem" type="text" />
-        <label>名額</label>
-        <input formControlName="numberOfWinner" type="number" size="4" />
-        <button (click)="removePrize(i)">移除獎項</button>
+  <div class="row">
+    <div class="col-md-4">
+      <div *ngIf="isCapturingMessage | async">
+        <button (click)="stop()">停止監看聊天訊息</button>
+        <h2>{{ eventTitle | async }} 聊天訊息</h2>
+        <ul class="list">
+          <li *ngFor="let message of messages$ | async; trackBy: mesageTrackByFn">
+            {{ message.displayName }} - {{ message.displayMessage }}
+          </li>
+        </ul>
       </div>
     </div>
-    <button (click)="addPrize()">新增獎項</button>
-  </form>
-  <label>通關密語</label>
-  <input type="text" #keyword/> {{ isEventStart | async }}
-  <button (click)="startPrizeDraw(keyword.value)" *ngIf="!(isEventStart | async)">開始</button>
-  <button (click)="stopPrizeDraw()" *ngIf="isEventStart | async">結束</button>
-  <div *ngIf="gameInfo">
-    <p>
-      <span *ngIf="gameInfo.startTime">
-        開始時間: {{ gameInfo.startTime | date: 'yyyy/MM/dd h:mm a' }}
-      </span>
-      <span *ngIf="gameInfo.endTime">
-        ~ 結束時間: {{ gameInfo.endTime | date: 'yyyy/MM/dd h:mm a' }}</span>
-    </p>
-    <ul>
-      <li *ngFor="let winner of winnerList$ | async">
-        {{ winner }}
-      </li>
-    </ul>
-    <div *ngIf="gameInfo.endTime">
-      <button (click)="drawWinner()">開始抽獎</button>
-      <h2>中獎名單</h2>
-      <ul>
-        <li *ngFor="let winner of gameInfo.winners">
-          {{ winner.prize }} - {{ winner.winner }}
-        </li>
-      </ul>
-      <button (click)="resetResult()">重新抽獎</button>
-      <button (click)="saveResult()">儲存</button>
+    <div class="col-md-8">
+      <div class="row">
+        <div class="col-sm-12 mb15">
+          <h2>抽獎活動</h2>
+          <label>活動獎品</label>
+          <form [formGroup]="game" class="form-inline">
+            <div formArrayName="prizes" class="mb15">
+              <div class="form-group" *ngFor="let prize of prizes.controls; index as i" [formGroupName]="i">
+                <label>獎品</label>
+                <input class="form-control" formControlName="prizeItem" type="text" />
+                <label>名額</label>
+                <input class="form-control input-sm-1" formControlName="numberOfWinner" type="number" size="4" />
+                <button class="btn btn-sm btn-warning" (click)="removePrize(i)">移除獎項</button>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-primary" (click)="addPrize()">新增獎項</button>
+          </form>
+        </div>
+        <div class="col-sm-12 mb15">
+          <div class="form-inline">
+            <div class="form-group">
+              <label>通關密語</label>
+              <input class="form-control" type="text" #keyword/>
+            </div>
+            <button class="btn btn-sm btn-default" (click)="startPrizeDraw(keyword.value)" *ngIf="!(isEventStart | async)">開始</button>
+            <button class="btn btn-sm btn-default" (click)="stopPrizeDraw()" *ngIf="isEventStart | async">結束</button>
+          </div>
+        </div>
+        <div class="col-sm-12" *ngIf="gameInfo">
+          <p>
+            <span *ngIf="gameInfo.startTime">
+              開始時間: {{ gameInfo.startTime | date: 'yyyy/MM/dd h:mm a' }}
+            </span>
+            <span *ngIf="gameInfo.endTime">
+              ~ 結束時間: {{ gameInfo.endTime | date: 'yyyy/MM/dd h:mm a' }}</span>
+          </p>
+          <ul>
+            <li *ngFor="let winner of winnerList$ | async">
+              {{ winner }}
+            </li>
+          </ul>
+          <div *ngIf="gameInfo.endTime">
+            <button (click)="drawWinner()">開始抽獎</button>
+            <h2>中獎名單</h2>
+            <ul>
+              <li *ngFor="let winner of gameInfo.winners">
+                {{ winner.prize }} - {{ winner.winner }}
+              </li>
+            </ul>
+            <button (click)="resetResult()">重新抽獎</button>
+            <button (click)="saveResult()">儲存</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -40,7 +40,9 @@ export class ChatComponent implements OnInit {
   removePrize(idx) {
     this.prizes.removeAt(idx);
   }
-  ngOnInit() {}
+  ngOnInit() {
+    this.addPrize();
+  }
 
   setLiveChatId(id, title) {
     this.broadcastSerivce.startWatchBroadcastChat(id, title).subscribe();
