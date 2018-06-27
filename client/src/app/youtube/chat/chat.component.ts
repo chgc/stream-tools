@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { BroadcastService } from '../broadcast.service';
+import { BroadcastService } from '../services/broadcast.service';
 
 @Component({
   selector: 'app-chat',

@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
-import { PrizehubService } from '../prizehub.service';
+import { PrizehubService } from '../services/prizehub.service';
 
 @Component({
   selector: 'app-prize-display',

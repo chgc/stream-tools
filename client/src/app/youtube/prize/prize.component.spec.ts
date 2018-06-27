@@ -1,8 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PrizeComponent } from './prize.component';
-import { PrizeDrawService } from '../prize-draw.service';
-import { PrizehubService } from '../prizehub.service';
+import { PrizeDrawService } from '../services/prize-draw.service';
+import { PrizehubService } from '../services/prizehub.service';
 import { AuthService } from '../../auth.service';
 import { of } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';

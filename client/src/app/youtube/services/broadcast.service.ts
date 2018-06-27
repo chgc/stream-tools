@@ -10,11 +10,11 @@ import {
   tap,
   catchError
 } from 'rxjs/operators';
-import { DisplayMessage } from './models/displayMessage';
-import { LiveChatMessage } from './models/liveChatMessage';
-import { LiveChatMessageListResponse } from './models/liveChatMessageListResponse';
+import { DisplayMessage } from '../models/displayMessage';
+import { LiveChatMessage } from '../models/liveChatMessage';
+import { LiveChatMessageListResponse } from '../models/liveChatMessageListResponse';
 import { PrizeDrawService } from './prize-draw.service';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../../auth.service';
 
 type broadcastStatus = 'all' | 'active' | 'completed' | 'upcoming';
 

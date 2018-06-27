@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HubService } from '../caption/services/hub.service';
+import { HubService } from '../../caption/services/hub.service';
 
 @Injectable({
   providedIn: 'root'

@@ -9,7 +9,7 @@ import {
   tick
 } from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../../auth.service';
 import { BroadcastService } from './broadcast.service';
 import { PrizeDrawService } from './prize-draw.service';
 

@@ -4,7 +4,7 @@ import {
   HttpTestingController
 } from '@angular/common/http/testing';
 import { PrizeDrawService } from './prize-draw.service';
-import { GameInfo } from './models/GameInfo';
+import { GameInfo } from '../models/GameInfo';
 
 describe('PrizeDrawService', () => {
   let service: PrizeDrawService;

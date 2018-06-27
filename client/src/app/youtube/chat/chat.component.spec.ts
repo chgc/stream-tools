@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BehaviorSubject, of } from 'rxjs';
-import { BroadcastService } from '../broadcast.service';
+import { BroadcastService } from '../services/broadcast.service';
 import { ChatComponent } from './chat.component';
 
 describe('ChatComponent', () => {

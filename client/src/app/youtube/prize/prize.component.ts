@@ -1,19 +1,18 @@
 import {
   Component,
-  OnInit,
   ElementRef,
-  ViewChild,
+  Input,
   OnDestroy,
-  Input
+  OnInit,
+  ViewChild
 } from '@angular/core';
-import { PrizehubService } from '../prizehub.service';
-import { GameInfo } from '../models/GameInfo';
-import { Observable, Subject } from 'rxjs';
-import { BroadcastService } from '../broadcast.service';
-import { PrizeDrawService } from '../prize-draw.service';
-import { AuthService } from '../../auth.service';
-import { FormBuilder, FormArray, FormGroup, FormControl } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { AuthService } from '../../auth.service';
+import { GameInfo } from '../models/GameInfo';
+import { PrizeDrawService } from '../services/prize-draw.service';
+import { PrizehubService } from '../services/prizehub.service';
 
 @Component({
   selector: 'app-prize',
@@ -40,18 +39,6 @@ export class PrizeComponent implements OnInit, OnDestroy {
     private fb: FormBuilder
   ) {}
 
-  get prizes() {
-    return this.game.get('prizes') as FormArray;
-  }
-
-  addPrize(numberOfWinner = 1, prizeItem = '') {
-    this.prizes.push(this.fb.group({ numberOfWinner, prizeItem }));
-  }
-
-  removePrize(idx) {
-    this.prizes.removeAt(idx);
-  }
-
   ngOnInit() {
     this.preparePrizeDisplay();
     this.restorePrizes();
@@ -70,6 +57,18 @@ export class PrizeComponent implements OnInit, OnDestroy {
           });
         }
       });
+  }
+
+  get prizes() {
+    return this.game.get('prizes') as FormArray;
+  }
+
+  addPrize(numberOfWinner = 1, prizeItem = '') {
+    this.prizes.push(this.fb.group({ numberOfWinner, prizeItem }));
+  }
+
+  removePrize(idx) {
+    this.prizes.removeAt(idx);
   }
 
   private preparePrizeDisplay() {
@@ -109,13 +108,12 @@ export class PrizeComponent implements OnInit, OnDestroy {
   }
 
   toggleDrawPirzeList(enable) {
+    const controlEnableDisable = control =>
+      enable ? control.enable() : control.disable();
+
     this.prizes.controls.forEach((group: FormGroup) => {
       Object.values(group.controls).forEach((control: FormControl) => {
-        if (enable) {
-          control.enable();
-        } else {
-          control.disable();
-        }
+        controlEnableDisable(control);
       });
     });
   }

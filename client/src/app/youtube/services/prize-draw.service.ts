@@ -1,4 +1,4 @@
-import { GameInfo } from './models/GameInfo';
+import { GameInfo } from '../models/GameInfo';
 
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
