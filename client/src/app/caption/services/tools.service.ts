@@ -43,18 +43,6 @@ export class ToolsService {
     this.hubService.invokeCommand('SendCommand', this.roomName, command);
   }
 
-  injectStyle(cssSylte) {
-    const customStyleDOM = document.querySelector('style[title="custom"]');
-    if (customStyleDOM) {
-      customStyleDOM.remove();
-    }
-    const script = document.createElement('style');
-    script.type = 'text/css';
-    script.title = 'custom';
-    script.appendChild(document.createTextNode(cssSylte));
-    document.body.appendChild(script);
-  }
-
   private registerToServer() {
     if (this.roomName.length > 0) {
       this.hubService.invokeCommand('JoinRoom', this.roomName);

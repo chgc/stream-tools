@@ -29,7 +29,6 @@ export class PrizeDrawService {
     this.resetGame(eventTitle, keyword, startTime);
     this.isEventStart$.next(true);
     this.possibleWinnerList$.subscribe(list => {
-      console.log(list);
       this.gameInfo.nameList = list;
     });
   }
@@ -68,7 +67,7 @@ export class PrizeDrawService {
     this.http.post('api/prize/create', prizeHistory).subscribe();
   }
 
-  private resetGame(eventTitle, keyword, startTime) {
+  resetGame(eventTitle, keyword, startTime) {
     this.gameInfo = {
       eventTitle: eventTitle,
       keyword: keyword,

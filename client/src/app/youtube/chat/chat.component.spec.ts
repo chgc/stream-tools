@@ -5,6 +5,8 @@ import { PrizeDrawService } from '../prize-draw.service';
 import { of, BehaviorSubject } from 'rxjs';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { TestScheduler } from 'rxjs/testing';
+import { PrizehubService } from '../prizehub.service';
+import { AuthService } from '../../auth.service';
 
 describe('ChatComponent', () => {
   let component: ChatComponent;
@@ -27,12 +29,23 @@ describe('ChatComponent', () => {
     'resetWinner'
   ]);
 
+  const prizehubServiceSpy = jasmine.createSpyObj('PrizehubService', [
+    'joinRoom',
+    'startListen'
+  ]);
+
+  const FakeAuthService = {
+    authState: of({ uid: 1 })
+  } as any;
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ChatComponent],
       providers: [
         { provide: BroadcastService, useValue: broadcastServiceMock },
-        { provide: PrizeDrawService, useValue: prizeDrawSeriveSpy }
+        { provide: PrizeDrawService, useValue: prizeDrawSeriveSpy },
+        { provide: PrizehubService, useValue: prizehubServiceSpy },
+        { provide: AuthService, useValue: FakeAuthService }
       ],
       imports: [ReactiveFormsModule]
     }).compileComponents();
@@ -41,8 +54,11 @@ describe('ChatComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ChatComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
     broadcastService = TestBed.get(BroadcastService);
+
+    spyOn(localStorage, 'getItem').and.returnValue(undefined);
+
+    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -76,7 +92,7 @@ describe('ChatComponent', () => {
   it('should remove prize', () => {
     component.addPrize();
     component.removePrize(0);
-    expect(component.prizes.length).toBe(0);
+    expect(component.prizes.length).toBe(1);
   });
 
   it('should stop prize draw', () => {

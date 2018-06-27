@@ -18,7 +18,9 @@ export class MainComponent implements OnInit {
     private store: Store,
     private http: HttpClient
   ) {
-    this.isDisplay = this.router.url.includes('/main/caption/display');
+    this.isDisplay =
+      this.router.url.includes('/main/caption/display') ||
+      this.router.url.includes('/main/youtube/prizeDisplay');
   }
 
   ngOnInit() {}
