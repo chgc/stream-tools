@@ -19,7 +19,6 @@ export class PrizeDisplayComponent implements OnInit, OnDestroy {
 
   receiveNameList(gameInfo) {
     if (gameInfo) {
-      console.log(gameInfo);
       this.gameInfo = JSON.parse(gameInfo);
     }
   }

@@ -1,16 +1,22 @@
-<div *ngIf="gameInfo">
-  <h2>參加者名單</h2>
-  <ul>
-    <li *ngFor="let winner of gameInfo.nameList">
-      {{ winner }}
-    </li>
-  </ul>
-  <div *ngIf="gameInfo.endTime">
-    <h2>中獎名單</h2>
-    <ul>
-      <li *ngFor="let winner of gameInfo.winners">
-        {{ winner.prize }} - {{ winner.winner }}
-      </li>
-    </ul>
+<div class="container" *ngIf="gameInfo">
+  <div class="row">
+    <div class="col-md-6">
+      <h2>參加者名單</h2>
+      <ul>
+        <li *ngFor="let winner of gameInfo.nameList">
+          {{ winner }}
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <div *ngIf="gameInfo.endTime">
+        <h2>中獎名單</h2>
+        <ul>
+          <li *ngFor="let winner of gameInfo.winners">
+            {{ winner.prize }} - {{ winner.winner }}
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </div>

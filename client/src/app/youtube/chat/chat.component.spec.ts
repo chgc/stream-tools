@@ -1,12 +1,8 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ChatComponent } from './chat.component';
+import { BehaviorSubject, of } from 'rxjs';
 import { BroadcastService } from '../broadcast.service';
-import { PrizeDrawService } from '../prize-draw.service';
-import { of, BehaviorSubject } from 'rxjs';
-import { ReactiveFormsModule, FormGroup } from '@angular/forms';
-import { TestScheduler } from 'rxjs/testing';
-import { PrizehubService } from '../prizehub.service';
-import { AuthService } from '../../auth.service';
+import { ChatComponent } from './chat.component';
 
 describe('ChatComponent', () => {
   let component: ChatComponent;
@@ -21,33 +17,14 @@ describe('ChatComponent', () => {
     stopWatchBroadcastChat: () => {}
   };
 
-  const prizeDrawSeriveSpy = jasmine.createSpyObj('PrizeDrawService', [
-    'drawWinner',
-    'stop',
-    'start',
-    'saveWinner',
-    'resetWinner'
-  ]);
-
-  const prizehubServiceSpy = jasmine.createSpyObj('PrizehubService', [
-    'joinRoom',
-    'startListen'
-  ]);
-
-  const FakeAuthService = {
-    authState: of({ uid: 1 })
-  } as any;
-
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ChatComponent],
       providers: [
-        { provide: BroadcastService, useValue: broadcastServiceMock },
-        { provide: PrizeDrawService, useValue: prizeDrawSeriveSpy },
-        { provide: PrizehubService, useValue: prizehubServiceSpy },
-        { provide: AuthService, useValue: FakeAuthService }
+        { provide: BroadcastService, useValue: broadcastServiceMock }
       ],
-      imports: [ReactiveFormsModule]
+
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 
@@ -81,37 +58,5 @@ describe('ChatComponent', () => {
     component.stop();
     expect(broadcastService.stopWatchBroadcastChat).toHaveBeenCalled();
     expect(component.isCapturingMessage).toBeFalsy();
-  });
-
-  it('should draw winner', () => {
-    component.addPrize();
-    component.drawWinner();
-    expect(prizeDrawSeriveSpy.drawWinner).toHaveBeenCalledWith(1, '');
-  });
-
-  it('should remove prize', () => {
-    component.addPrize();
-    component.removePrize(0);
-    expect(component.prizes.length).toBe(1);
-  });
-
-  it('should stop prize draw', () => {
-    component.stopPrizeDraw();
-    expect(prizeDrawSeriveSpy.stop).toHaveBeenCalled();
-  });
-
-  it('should start prize draw', () => {
-    component.startPrizeDraw('keyword');
-    expect(prizeDrawSeriveSpy.start).toHaveBeenCalled();
-  });
-
-  it('should save result', () => {
-    component.saveResult();
-    expect(prizeDrawSeriveSpy.saveWinner).toHaveBeenCalled();
-  });
-
-  it('should reset winner list', () => {
-    component.resetResult();
-    expect(prizeDrawSeriveSpy.resetWinner).toHaveBeenCalled();
   });
 });
