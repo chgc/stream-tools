@@ -11,8 +11,8 @@
   <div class="row">
     <div class="col-md-4">
       <div *ngIf="isCapturingMessage | async">
-        <button (click)="stop()">停止監看聊天訊息</button>
-        <h2>{{ eventTitle | async }} 聊天訊息</h2>
+        <button class="btn btn-sm btn-default" (click)="stop()">停止監看聊天訊息</button>
+        <label>{{ eventTitle | async }} 聊天訊息</label>
         <ul class="list">
           <li *ngFor="let message of messages$ | async; trackBy: mesageTrackByFn">
             {{ message.displayName }} - {{ message.displayMessage }}
@@ -24,7 +24,7 @@
       <div class="row">
         <div class="col-sm-12 mb15">
           <h2>抽獎活動</h2>
-          <label>活動獎品</label>
+          <h3>活動獎品</h3>
           <form [formGroup]="game" class="form-inline">
             <div formArrayName="prizes" class="mb15">
               <div class="form-group" *ngFor="let prize of prizes.controls; index as i" [formGroupName]="i">
@@ -32,10 +32,10 @@
                 <input class="form-control" formControlName="prizeItem" type="text" />
                 <label>名額</label>
                 <input class="form-control input-sm-1" formControlName="numberOfWinner" type="number" size="4" />
-                <button class="btn btn-sm btn-warning" (click)="removePrize(i)">移除獎項</button>
+                <button class="btn btn-sm btn-warning" (click)="removePrize(i)" [disabled]="isEventStart | async">移除獎項</button>
               </div>
             </div>
-            <button class="btn btn-sm btn-primary" (click)="addPrize()">新增獎項</button>
+            <button class="btn btn-sm btn-primary" (click)="addPrize()" [disabled]="isEventStart | async">新增獎項</button>
           </form>
         </div>
         <div class="col-sm-12 mb15">
