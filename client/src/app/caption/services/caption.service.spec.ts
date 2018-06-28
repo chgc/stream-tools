@@ -1,152 +1,122 @@
-import { TestBed, inject } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { CaptionModel } from '../sotre/caption-items.state';
 import { CaptionService } from './caption.service';
-import { AngularFirestore } from 'angularfire2/firestore';
 
 describe('CaptionService', () => {
   let service: CaptionService;
-  let af: AngularFirestore;
-  const FakeAngularFirestore = {
-    doc: path => {},
-    createId: () => {}
-  };
+  let httpClient: HttpClient;
+  let httpTestingController: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        CaptionService,
-        { provide: AngularFirestore, useValue: FakeAngularFirestore }
-      ]
+      imports: [HttpClientTestingModule],
+      providers: [CaptionService]
     });
 
     service = TestBed.get(CaptionService);
-    af = TestBed.get(AngularFirestore);
+    httpClient = TestBed.get(HttpClient);
+    httpTestingController = TestBed.get(HttpTestingController);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should return captionDocument', () => {
-    spyOn(af, 'doc');
-    service.initFireStore('123');
-    expect(af.doc).toHaveBeenCalledWith('caption/123');
-  });
-
   it('should get caption list with id', () => {
-    const data = [
-      {
-        payload: {
-          doc: {
-            id: 1,
-            data: () => ({ name: 'test' })
-          }
-        }
+    const testData: CaptionModel[] = [
+      <CaptionModel>{
+        id: '1',
+        uid: 'test',
+        label: 'testLabel',
+        value: 'testValue',
+        displayCalss: '',
+        colorClass: '',
+        style: ''
       }
     ];
-    service.myCaptionDocument = {
-      collection: arg => ({
-        snapshotChanges: () => of(data)
-      })
-    } as any;
-
-    service.getCaptionList().subscribe(result => {
-      expect(result.length).toBe(1);
-      expect(result[0]).toEqual({ id: 1, name: 'test' });
+    service.getCaptionList().subscribe(value => {
+      expect(value).toEqual(testData);
     });
+    const req = httpTestingController.expectOne('/api/caption/list');
+    req.flush(testData);
+    httpTestingController.verify();
   });
 
   it('should createAndUpdate Caption', async () => {
-    const fakeItem = { label: 'test', caption: 'test' };
-    service.myCaptionDocument = {
-      collection: arg => ({
-        doc: () => ({
-          set: (item, options?) => Promise.resolve()
-        })
-      })
-    } as any;
-    spyOn(af, 'createId');
-    service.createAndUpdateCaption(null, fakeItem);
-    expect(af.createId).toHaveBeenCalled();
+    const testData: CaptionModel[] = [
+      <CaptionModel>{
+        id: '1',
+        uid: 'test',
+        label: 'testLabel',
+        value: 'testValue',
+        displayCalss: '',
+        colorClass: '',
+        style: ''
+      }
+    ];
+    service.createAndUpdateCaption(null, testData).subscribe();
+    const reqCreate = httpTestingController.expectOne('api/caption/create');
+    expect(reqCreate.request.method).toEqual('POST');
 
-    const result = await service.createAndUpdateCaption(1, fakeItem);
-    expect(result).toBeUndefined();
+    service.createAndUpdateCaption(1, testData).subscribe();
+    const reqUpdate = httpTestingController.expectOne('api/caption/update/1');
+    expect(reqUpdate.request.method).toEqual('PUT');
+    httpTestingController.verify();
   });
 
   it('should remove caption', () => {
-    service.myCaptionDocument = {
-      collection: arg => ({
-        doc: () => ({
-          delete: () => Promise.resolve()
-        })
-      })
-    } as any;
-    service.removeCaption(1).then(value => {
-      expect(value).toBeUndefined();
-    });
+    service.removeCaption(1).subscribe();
+    const req = httpTestingController.expectOne('api/caption/remove/1');
+    expect(req.request.method).toEqual('DELETE');
+    httpTestingController.verify();
   });
 
   it('should set area Position', () => {
-    service.myCaptionDocument = {
-      update: position => Promise.resolve()
-    } as any;
-    service.setAreaPosition({}).then(value => {
-      expect(value).toBeUndefined();
-    });
+    service.setAreaPosition({}).subscribe();
+    const req = httpTestingController.expectOne('api/caption/areaPosition');
+    expect(req.request.method).toEqual('POST');
+    httpTestingController.verify();
   });
 
   it('should get area position object', () => {
-    const mockAreaPosition = {
-      MAX_WIDTH: 0,
-      MAX_HEIGHT: 0,
-      START_X: 0,
-      START_Y: 0
-    };
-    service.myCaptionDocument = {
-      valueChanges: () => of(mockAreaPosition)
-    } as any;
+    service.getAreaPosition().subscribe();
 
-    service.getAreaPosition().subscribe(value => {
-      expect(value).toEqual({
-        MAX_WIDTH: 0,
-        MAX_HEIGHT: 0,
-        START_X: 0,
-        START_Y: 0
-      });
-    });
+    const req = httpTestingController.expectOne('api/caption/areaPosition');
+    expect(req.request.method).toEqual('GET');
+    httpTestingController.verify();
   });
 
   it('should set customCSS', () => {
-    service.myCaptionDocument = {
-      set: () => Promise.resolve()
-    } as any;
-
-    service.setCustomCSS('css').then(value => {
-      expect(value).toBeUndefined();
-    });
+    service.setCustomCSS('css').subscribe();
+    const req = httpTestingController.expectOne('api/caption/customCSS');
+    expect(req.request.method).toEqual('POST');
+    httpTestingController.verify();
   });
 
   it('should get custom css', () => {
     const mockData = {
       cssStyle: 'css'
     };
-    service.myCaptionDocument = {
-      valueChanges: () => of(mockData)
-    } as any;
-
     service.getCustomCSS().subscribe(value => {
       expect(value).toBe('css');
     });
+    const req = httpTestingController.expectOne('api/caption/customCSS/');
+    expect(req.request.method).toEqual('GET');
+    req.flush(mockData);
+    httpTestingController.verify();
   });
 
   it('should set obs connection information', () => {
-    service.myCaptionDocument = {
-      set: position => Promise.resolve()
-    } as any;
     const host = 'localhost',
       port = 4444;
-    service.setOBSConnectionInformation(host, port).then(value => {
-      expect(value).toBeUndefined();
-    });
+    service.setOBSConnectionInformation(host, port).subscribe();
+    const req = httpTestingController.expectOne('api/caption/connectionInfo');
+    expect(req.request.method).toEqual('POST');
+    httpTestingController.verify();
   });
 });

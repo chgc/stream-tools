@@ -67,9 +67,9 @@ fdescribe('DisplayComponent', () => {
   });
 
   it('should call injectStyle', () => {
-    spyOn(service, 'injectStyle');
+    spyOn(component, 'injectCustomStyle');
     component.injectStyle();
-    expect(service.injectStyle).toHaveBeenCalledWith(mockCustomCSS);
+    expect(component.injectCustomStyle).toHaveBeenCalledWith(mockCustomCSS);
   });
 
   it('should add to meesages', () => {

@@ -1,4 +1,5 @@
 import { TestBed, async, inject } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NgxsModule } from '@ngxs/store';
 import { EditableGuard } from './editable.guard';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,7 +19,11 @@ describe('EditableGuard', () => {
         EditableGuard,
         { provide: AngularFirestore, useValue: FakeAngularFirestore }
       ],
-      imports: [RouterTestingModule, NgxsModule.forRoot([EnvironmentState])]
+      imports: [
+        HttpClientTestingModule,
+        RouterTestingModule,
+        NgxsModule.forRoot([EnvironmentState])
+      ]
     });
 
     guard = TestBed.get(EditableGuard);

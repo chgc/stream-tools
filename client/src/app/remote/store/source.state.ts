@@ -57,7 +57,6 @@ export class SourcesState {
 
   @Action(ObsDispatchEvent)
   receiveEvent(ctx: StateContext<SourceModel[]>, action: ObsDispatchEvent) {
-    console.log(action);
     if (action.payload['update-type']) {
       this.processUpdateEvent(ctx, action);
       return;

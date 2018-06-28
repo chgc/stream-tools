@@ -17,6 +17,7 @@ export class SetAreaPosition {
 }
 export class GetCustomCSS {
   static readonly type = '[caption] get customCSS';
+  constructor(public payload = '') {}
 }
 
 export class SetCustomCSS {

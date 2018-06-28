@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace stream_tools
 {
@@ -9,7 +10,11 @@ namespace stream_tools
     {
         public async Task SendCommand(CommandModel command)
         {
-            await Clients.All.SendAsync("ReceiveCommand", JsonConvert.SerializeObject(command));
+          var settings = new JsonSerializerSettings()
+          {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+          };
+      await Clients.All.SendAsync("ReceiveCommand", JsonConvert.SerializeObject(command, settings));
         }
     }
 }

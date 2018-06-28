@@ -3,18 +3,18 @@ import { ScenesLoad } from '@store/scene.actions';
 import { SourcesState } from '@store/source.state';
 import { TransitionLoad } from '@store/transition.action';
 import { TransitionState } from '@store/transition.state';
-import { Subject } from 'rxjs';
-import { filter, take, takeUntil, tap } from 'rxjs/operators';
+import { from, Subject } from 'rxjs';
+import { concatMap, filter, take, takeUntil, tap } from 'rxjs/operators';
 import { ObsService } from '../services/obs.service';
 import {
   ObsConnect,
   ObsConnected,
   ObsDisconnect,
   ObsDispatchEvent,
+  ObsError,
   ObsRecordingToggle,
   ObsStreamingStatus,
-  ObsStreamingToggle,
-  ObsError
+  ObsStreamingToggle
 } from './obs.actions';
 import { ScenesState } from './scenes.state';
 export interface ObsModel {
@@ -46,7 +46,10 @@ export class ObsState {
 
   @Action(ObsConnect)
   connect(ctx: StateContext<ObsModel>, action: ObsConnect) {
-    this.service.connect(action.host, action.port);
+    this.service.connect(
+      action.host,
+      action.port
+    );
 
     const initialAction = message => {
       const state = ctx.getState();
@@ -59,16 +62,21 @@ export class ObsState {
           ...this.service.requestTask('SetHeartbeat'),
           payload: { enable: true }
         });
-        ctx.dispatch([
+        from([
           new ObsConnected(),
           new ScenesLoad(),
           new TransitionLoad(),
           new ObsStreamingStatus()
-        ]);
+        ])
+          .pipe(concatMap(_action => ctx.dispatch(_action)))
+          .subscribe();
       }
     };
 
-    return this.service.channel$.pipe(take(1), tap(initialAction));
+    return this.service.channel$.pipe(
+      take(1),
+      tap(initialAction)
+    );
   }
 
   @Action(ObsDisconnect)
@@ -141,6 +149,13 @@ export class ObsState {
           'current-transition': action.payload['current-transition']
         });
         break;
+      case 'GetStreamingStatus':
+        ctx.setState({
+          ...state,
+          streaming: action.payload.streaming,
+          recording: action.payload.recording
+        });
+        break;
     }
   }
 
@@ -174,6 +189,13 @@ export class ObsState {
           ...state,
           recording: false,
           recordStartStopping: false
+        });
+        break;
+      case 'StreamStatus':
+        ctx.setState({
+          ...state,
+          streaming: action.payload.streaming,
+          recording: action.payload.recording
         });
         break;
       case 'StreamStarting':

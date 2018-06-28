@@ -40,7 +40,7 @@ export class DisplayComponent implements OnInit, OnDestroy {
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(param => {
       this.service.joinRoom(param.get('room'));
       this.store.dispatch(new SetUserID(param.get('room')));
-      this.store.dispatch(new GetCustomCSS());
+      this.store.dispatch(new GetCustomCSS(param.get('room')));
     });
   }
 
@@ -49,7 +49,10 @@ export class DisplayComponent implements OnInit, OnDestroy {
     this.service.init();
     this.tasks$.pipe(mergeMap(task => task)).subscribe();
     this.message$
-      .pipe(tap(value => this.messages.push({ ...value })))
+      .pipe(
+        tap(v => console.log(v)),
+        tap(value => this.messages.push({ ...value }))
+      )
       .subscribe(value => {
         this.tasks$.next(this.remover$);
       });
@@ -63,11 +66,23 @@ export class DisplayComponent implements OnInit, OnDestroy {
         map(env => env.customCSS),
         distinctUntilChanged()
       )
-      .subscribe(customCSS => this.service.injectStyle(customCSS));
+      .subscribe(customCSS => this.injectCustomStyle(customCSS));
   }
   ngOnDestroy() {
     this.service.leaveRoom();
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  injectCustomStyle(cssSylte) {
+    const customStyleDOM = document.querySelector('style[title="custom"]');
+    if (customStyleDOM) {
+      customStyleDOM.remove();
+    }
+    const script = document.createElement('style');
+    script.type = 'text/css';
+    script.title = 'custom';
+    script.appendChild(document.createTextNode(cssSylte));
+    document.body.appendChild(script);
   }
 }

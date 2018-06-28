@@ -12,6 +12,8 @@ import {
   map,
   takeUntil,
   tap,
+  take,
+  mergeMap,
   distinctUntilChanged
 } from 'rxjs/operators';
 import { AuthService } from '../../auth.service';
@@ -28,6 +30,7 @@ import {
   SetCustomCSS,
   SetUserID
 } from '../sotre/environment.action';
+import { AngularFirestore } from 'angularfire2/firestore';
 declare var ace: any;
 
 @Component({
@@ -41,6 +44,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
 
   editGroups: FormGroup = this.fb.group({
     id: '',
+    uid: '',
     label: ['', [Validators.required]],
     value: ['', [Validators.required]],
     displayClass: '',
@@ -49,10 +53,10 @@ export class PanelEditComponent implements OnInit, OnDestroy {
   });
 
   areaPositionGroup = this.fb.group({
-    MAX_WIDTH: [],
-    MAX_HEIGHT: [],
-    START_X: [],
-    START_Y: []
+    maxWidth: [],
+    maxHeight: [],
+    startX: [],
+    startY: []
   });
 
   customCSSGroup = this.fb.group({
@@ -66,7 +70,8 @@ export class PanelEditComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private store: Store,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private fireStore: AngularFirestore
   ) {}
 
   ngOnInit() {
@@ -75,6 +80,36 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     this.initCustomCSSGroup();
   }
 
+  clone() {
+    this.authService.authState
+      .pipe(
+        take(1),
+        mergeMap(user => {
+          return this.fireStore
+            .collection(`caption/${user.uid}/captions`)
+            .valueChanges()
+            .pipe(take(1));
+        }),
+        tap(captions => {
+          captions.forEach((caption: any) => {
+            let style = '';
+            try {
+              style = JSON.stringify(caption.style);
+            } catch {}
+            this.store.dispatch(
+              new AddCaption({
+                label: caption.label,
+                value: caption.value,
+                displayClass: caption.displayClass,
+                colorClass: caption.colorClass,
+                style: style
+              })
+            );
+          });
+        })
+      )
+      .subscribe();
+  }
   resetValue() {
     this.store.selectOnce(state => state.environement).subscribe(env => {
       if (env.areaPosition) {
@@ -93,13 +128,21 @@ export class PanelEditComponent implements OnInit, OnDestroy {
 
   initAreaEnvironmentFormGroup() {
     this.areaPositionGroup.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(value => this.store.dispatch(new SetAreaPosition(value)));
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(500)
+      )
+      .subscribe(value => {
+        this.store.dispatch(new SetAreaPosition(value));
+      });
   }
 
   initCustomCSSGroup() {
     this.customCSSGroup.valueChanges
-      .pipe(takeUntil(this.destroy$), debounceTime(500))
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(500)
+      )
       .subscribe(value =>
         this.store.dispatch(new SetCustomCSS(value.customCSS))
       );
@@ -116,18 +159,32 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     this.editGroups.reset(caption);
 
     this.editGroups.valueChanges
-      .pipe(takeUntil(this.stop$), debounceTime(500))
+      .pipe(
+        takeUntil(this.stop$),
+        debounceTime(500)
+      )
       .subscribe(formValue => this.save(formValue));
   }
 
   createCaption() {
+    this.stop$.next();
     this.editGroups.reset({
       id: '',
+      uid: '',
       label: '',
       value: '',
       displayClass: '',
       colorClass: 'btn-primary',
       style: ''
+    });
+  }
+
+  copyCaption() {
+    this.stop$.next();
+    const caption = this.editGroups.getRawValue();
+    this.editGroups.reset({
+      ...caption,
+      id: ''
     });
   }
 
@@ -139,7 +196,7 @@ export class PanelEditComponent implements OnInit, OnDestroy {
     try {
       formValue = {
         ...formValue,
-        style: JSON.parse(formValue.style || '{}')
+        style: formValue.style
       };
     } catch {}
     if (formValue.id) {

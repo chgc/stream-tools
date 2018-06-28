@@ -15,7 +15,7 @@ import { AuthService } from './auth.service';
 export class AuthGuard implements CanActivateChild {
   constructor(private authService: AuthService, private router: Router) {}
   canActivateChild(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    if (state.url.includes('display')) {
+    if (state.url.includes('display') || state.url.includes('prizeDisplay')) {
       return of(true);
     }
     return this.authService.authState.pipe(

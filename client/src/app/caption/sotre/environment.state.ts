@@ -23,10 +23,10 @@ export interface CaptionPanelModel {
     displayUrl: '',
     customCSS: '',
     areaPosition: {
-      MAX_WIDTH: 0,
-      MAX_HEIGHT: 0,
-      START_X: 0,
-      START_Y: 0
+      maxWidth: 0,
+      maxHeight: 0,
+      startX: 0,
+      startY: 0
     }
   }
 })
@@ -36,7 +36,6 @@ export class EnvironmentState {
   @Action(SetUserID)
   setUserId(ctx: StateContext<CaptionPanelModel>, action: SetUserID) {
     ctx.setState({ ...ctx.getState(), uid: action.uid });
-    return this.captionService.initFireStore(action.uid);
   }
 
   @Action(SetDisplayUrl)
@@ -69,7 +68,7 @@ export class EnvironmentState {
   ) {
     return this.captionService
       .setAreaPosition(action.payload)
-      .then(() => ctx.dispatch(new GetAreaPosition()));
+      .subscribe(() => ctx.dispatch(new GetAreaPosition()));
   }
 
   @Action(GetCustomCSS)
@@ -77,13 +76,15 @@ export class EnvironmentState {
     const currentState = ctx.getState();
     const updateCustomCSSState = customCSS =>
       ctx.setState({ ...currentState, customCSS });
-    return this.captionService.getCustomCSS().pipe(tap(updateCustomCSSState));
+    return this.captionService
+      .getCustomCSS(action.payload)
+      .pipe(tap(updateCustomCSSState));
   }
 
   @Action(SetCustomCSS)
   setCustomCSS(ctx: StateContext<CaptionPanelModel>, action: SetCustomCSS) {
     return this.captionService
       .setCustomCSS(action.payload)
-      .then(() => ctx.dispatch(new GetCustomCSS()));
+      .subscribe(() => ctx.dispatch(new GetCustomCSS()));
   }
 }

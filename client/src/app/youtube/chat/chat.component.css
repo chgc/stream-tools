@@ -1,0 +1,5 @@
+.list {
+  overflow: scroll;
+  max-height: 60vh;
+  padding-right: 30px;
+}

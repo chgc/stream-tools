@@ -54,17 +54,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.displayStreamingButton$ = store.select(state => state.obs).pipe(
       map(obs => {
         if (obs.streaming) {
-          return `${obs.streamStartStoping ? 'stopping' : 'stop'} streaming`;
+          return `${obs.streamStartStopping ? 'stopping' : 'stop'} streaming`;
         }
-        return `${obs.streamStartStoping ? 'starting' : 'start'} streaming`;
+        return `${obs.streamStartStopping ? 'starting' : 'start'} streaming`;
       })
     );
     this.displayRecordingButton$ = store.select(state => state.obs).pipe(
       map(obs => {
         if (obs.recording) {
-          return `${obs.recordStartStoping ? 'stopping' : 'stop'} recording`;
+          return `${obs.recordStartStopping ? 'stopping' : 'stop'} recording`;
         }
-        return `${obs.recordStartStoping ? 'starting' : 'start'} recording`;
+        return `${obs.recordStartStopping ? 'starting' : 'start'} recording`;
       })
     );
   }
